@@ -2,21 +2,17 @@
 
 <div align="center">
 
-<img src="icons/icon-128.png" alt="Doomscroll Tracker" width="100" />
+<img src="icons/icon-128.png" alt="Doomscroll Tracker" width="96" />
 
-**Monitore o tempo que você passa em sites de entretenimento — e retome o controle da sua atenção.**
+### Monitore o tempo que você passa em sites de entretenimento — e retome o controle da sua atenção.
 
-[![Version](https://img.shields.io/badge/versão-2.0.0-8b5cf6?style=flat-square)](https://github.com/SEU_USUARIO/doomscroll-tracker)
-[![Manifest](https://img.shields.io/badge/Manifest-V3-2dd4bf?style=flat-square)](https://developer.chrome.com/docs/extensions/mv3/)
-[![License](https://img.shields.io/badge/licença-MIT-fb7185?style=flat-square)](LICENSE)
-[![Privacy](https://img.shields.io/badge/privacidade-100%25%20local-22d3a5?style=flat-square)](#-privacidade)
-[![PRs Welcome](https://img.shields.io/badge/PRs-bem--vindos-fbbf24?style=flat-square)](CONTRIBUTING.md)
+![Version](https://img.shields.io/badge/version-2.0.0-8b5cf6?style=flat-square)
+![Manifest](https://img.shields.io/badge/Manifest-V3-2dd4bf?style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-fb7185?style=flat-square)
+![Privacy](https://img.shields.io/badge/privacy-100%25_local-22d3a5?style=flat-square)
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-fbbf24?style=flat-square)
 
-[**Instalar manualmente**](#-instalação) · [**Ver funcionalidades**](#-funcionalidades) · [**Como funciona**](#-como-funciona) · [**Contribuir**](#-contribuindo)
-
----
-
-![Preview do popup](docs/preview.png)
+**[Instalar](#-instalacao) · [Funcionalidades](#-funcionalidades) · [Como funciona](#-como-funciona) · [Contribuir](#-contribuindo)**
 
 </div>
 
@@ -26,32 +22,33 @@
 
 Você já abriu o Twitter "só por um segundo" e percebeu que passaram 45 minutos? Isso é **doomscrolling** — o consumo inconsciente e infinito de conteúdo em feeds de redes sociais.
 
-**Doomscroll Tracker** monitora em tempo real quanto tempo você passa nesses sites, mostra seu progresso diário e semanal, e te dá nudges gentis (não irritantes) para fazer uma pausa. Sem julgamento — só clareza.
+**Doomscroll Tracker** monitora em tempo real quanto tempo você passa nesses sites, mostra seu progresso diário e semanal, e te dá nudges gentis para fazer uma pausa. Sem julgamento — só clareza.
 
 ---
 
 ## 🚀 Funcionalidades
 
-### 📊 Dashboard inteligente
-- **Timer ao vivo** — vê em tempo real quantos minutos você está no site atual
-- **Cards de hoje e semana** com comparativo percentual vs. ontem e semana passada
-- **Gráfico de barras** dos últimos 7 dias com destaque no dia atual
-- **Top sites** rankeados por tempo (hoje e semana), com barra proporcional
-- **Sessões recentes** com horário de início e duração
+### 📊 Dashboard com 3 abas
 
-### 🔥 Streak & motivação
-- **Contador de dias consecutivos** abaixo do limite diário
-- **Recorde pessoal** (melhor streak)
-- **Mensagens dinâmicas** com personalidade — de `😌 Tudo certo!` a `🚨 Limite atingido!`
-- **Confetti** quando você mantém um streak de 3+ dias 🎉
-- **Emojis adaptativos**: `🌱` → `🔥` → `🏆`
+**Aba Hoje**
+- ⏱ **Timer ao vivo** — vê em tempo real quantos minutos você está no site atual
+- 📈 **Cards de hoje e semana** com comparativo percentual vs. ontem e semana passada
+- 🔥 **Streak de dias** abaixo do limite com recorde pessoal
+- 💬 **Mensagens dinâmicas** com personalidade — de `😌 Tudo certo!` a `🚨 Limite atingido!`
+- 🎉 **Confetti** quando você mantém um streak de 3+ dias
+- 🏆 Emojis adaptativos: `🌱` → `🔥` → `🏆`
 
-### ⚙️ Configurável do jeito que você quer
-- **Limite diário customizável** via slider (10–300 min)
-- **Adicionar e remover domínios** diretamente no popup (chips clicáveis)
-- **Notificações do sistema** a 80% e 100% do limite
-- **Pausa / Retomar** rastreamento com um clique
-- **Export CSV** com histórico completo por dia e por sessão
+**Aba Semana**
+- 📊 **Gráfico de barras** dos últimos 7 dias com destaque no dia atual
+- 📉 **Pills de resumo**: média, melhor e pior dia
+- 🌐 **Top sites** rankeados por tempo (semana), com barra proporcional
+- 📋 **Sessões recentes** com horário de início e duração
+- 📥 **Export CSV** com histórico completo por dia e por sessão
+
+**Aba Configurações**
+- 🎚 **Limite diário customizável** via slider (10–300 min)
+- 🔔 **Notificações do sistema** a 80% e 100% do limite (ativáveis/desativáveis)
+- ➕ **Adicionar e remover domínios** diretamente no popup (chips clicáveis)
 
 ### 🔒 Privacidade total
 - **Zero dados enviados** a servidores externos
@@ -60,82 +57,58 @@ Você já abriu o Twitter "só por um segundo" e percebeu que passaram 45 minuto
 
 ---
 
-## 📸 Screenshots
+## 📦 Instalacao
 
-<div align="center">
-<table>
-<tr>
-  <td align="center"><strong>Aba Hoje</strong><br><img src="docs/screenshot-today.png" width="220"/></td>
-  <td align="center"><strong>Aba Semana</strong><br><img src="docs/screenshot-week.png" width="220"/></td>
-  <td align="center"><strong>Configurações</strong><br><img src="docs/screenshot-settings.png" width="220"/></td>
-</tr>
-</table>
-</div>
+> Instalação via modo desenvolvedor — não requer publicação na Chrome Web Store.
 
----
+**1. Clone o repositório:**
+```bash
+git clone https://github.com/TheoGoulart333/doomscroll-tracker.git
+```
 
-## 📦 Instalação
+**2. Abra o Chrome e acesse:**
+```
+chrome://extensions/
+```
 
-### Via GitHub (modo desenvolvedor)
+**3. Ative o "Modo de desenvolvedor"** (canto superior direito).
 
-> Não requer publicação na Chrome Web Store — instale diretamente do repositório.
+**4. Clique em "Carregar sem compactação"** e selecione a pasta `doomscroll-tracker`.
 
-1. **Clone o repositório:**
-   ```bash
-   git clone https://github.com/SEU_USUARIO/doomscroll-tracker.git
-   cd doomscroll-tracker
-   ```
-
-2. **Abra o Chrome e vá para:**
-   ```
-   chrome://extensions/
-   ```
-
-3. **Ative o Modo de desenvolvedor** (interruptor no canto superior direito).
-
-4. **Clique em "Carregar sem compactação"** e selecione a pasta `doomscroll-tracker`.
-
-5. O ícone aparecerá na barra de ferramentas. Clique para começar! 🎉
-
-### Download direto (ZIP)
-
-1. [Baixe o ZIP mais recente](https://github.com/SEU_USUARIO/doomscroll-tracker/releases/latest)
-2. Extraia a pasta
-3. Siga os passos 2–5 acima
+**5. Pronto!** O ícone aparecerá na barra de ferramentas. Clique para começar. 🎉
 
 ---
 
 ## 🛠 Como funciona
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    CHROME BROWSER                       │
-│                                                         │
-│  ┌────────────────┐      ┌───────────────────────────┐  │
-│  │  background.js │      │       popup.html/js        │  │
-│  │  (service      │◄────►│  (UI com 3 abas:          │  │
-│  │   worker)      │      │   Hoje / Semana /          │  │
-│  │                │      │   Configurações)           │  │
-│  │  • Detecta URL │      │  • Mostra stats ao vivo   │  │
-│  │  • Conta tempo │      │  • Timer em tempo real    │  │
-│  │  • Salva dados │      │  • Gráficos e rankings    │  │
-│  │  • Streaks     │      │  • Export CSV             │  │
-│  │  • Notificações│      │  • Configurações inline   │  │
-│  └───────┬────────┘      └───────────────────────────┘  │
-│          │                                               │
-│          ▼                                               │
-│  ┌───────────────────┐                                   │
-│  │ chrome.storage    │  ← Tudo 100% local no navegador  │
-│  │ .local            │                                   │
-│  │                   │                                   │
-│  │ daily: {...}      │                                   │
-│  │ weekly: {...}     │                                   │
-│  │ siteDaily: {...}  │                                   │
-│  │ sessions: [...]   │                                   │
-│  │ streak: 5         │                                   │
-│  │ dailyLimit: 60    │                                   │
-│  └───────────────────┘                                   │
-└─────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                       CHROME BROWSER                        │
+│                                                             │
+│  ┌──────────────────┐       ┌──────────────────────────┐   │
+│  │  background.js   │◄─────►│      popup.html / js     │   │
+│  │  (service worker)│       │                          │   │
+│  │                  │       │  Aba Hoje:               │   │
+│  │  • Detecta URL   │       │   timer ao vivo          │   │
+│  │  • Conta tempo   │       │   streak, mood, top sites│   │
+│  │  • Salva sessões │       │                          │   │
+│  │  • Streaks       │       │  Aba Semana:             │   │
+│  │  • Notificações  │       │   gráfico 7 dias         │   │
+│  └────────┬─────────┘       │   export CSV             │   │
+│           │                 │                          │   │
+│           ▼                 │  Aba Configurações:      │   │
+│  ┌──────────────────┐       │   limite, notifs, sites  │   │
+│  │ chrome.storage   │       └──────────────────────────┘   │
+│  │ .local           │                                       │
+│  │                  │  ← 100% local, sem servidores         │
+│  │  daily: {...}    │                                       │
+│  │  weekly: {...}   │                                       │
+│  │  siteDaily: {...}│                                       │
+│  │  sessions: [...] │                                       │
+│  │  streak: 5       │                                       │
+│  │  dailyLimit: 60  │                                       │
+│  └──────────────────┘                                       │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ### Fluxo de rastreamento
@@ -143,22 +116,22 @@ Você já abriu o Twitter "só por um segundo" e percebeu que passaram 45 minuto
 1. **Troca de aba / mudança de URL** → `background.js` verifica se o domínio está na lista monitorada
 2. **Domínio detectado** → inicia timer (`startTimestamp = Date.now()`)
 3. **Usuário sai do site** (muda de aba, URL ou fica inativo) → `stopTracking()` calcula `agora - startTimestamp` em minutos
-4. **Dados salvos** em `daily`, `weekly` e `siteDaily` (por site/dia) + array de sessões
+4. **Dados salvos** em `daily`, `weekly`, `siteDaily` (por site/dia) + array de sessões
 5. **Streak recalculado** a cada sessão salva
 6. **Notificação** disparada ao atingir 80% e 100% do limite diário
 
-### Estrutura de dados
+### Estrutura dos dados
 
 ```json
 {
-  "daily":    { "2026-11-05": 42, "2026-11-04": 61 },
-  "weekly":   { "2026-W44": 180 },
-  "siteDaily":{ "2026-11-05": { "youtube.com": 20, "reddit.com": 22 } },
-  "sessions": [{ "domain": "youtube.com", "date": "2026-11-05", "start": "14:32", "minutes": 20 }],
-  "streak":   3,
+  "daily":     { "2026-11-05": 42, "2026-11-04": 61 },
+  "weekly":    { "2026-W44": 180 },
+  "siteDaily": { "2026-11-05": { "youtube.com": 20, "reddit.com": 22 } },
+  "sessions":  [{ "domain": "youtube.com", "date": "2026-11-05", "start": "14:32", "minutes": 20 }],
+  "streak":    3,
   "bestStreak": 7,
   "dailyLimit": 60,
-  "trackedDomains": ["youtube.com","reddit.com","twitter.com","..."]
+  "trackedDomains": ["youtube.com", "reddit.com", "twitter.com", "..."]
 }
 ```
 
@@ -179,13 +152,11 @@ Você já abriu o Twitter "só por um segundo" e percebeu que passaram 45 minuto
 | HuffPost | `huffpost.com` |
 | BuzzFeed | `buzzfeed.com` |
 
-> Adicione ou remova sites diretamente no popup (aba Configurações).
+> Adicione ou remova sites diretamente no popup (aba Configurações → chips clicáveis).
 
 ---
 
 ## 🔐 Privacidade
-
-Esta extensão foi desenvolvida com **privacidade por design**:
 
 | Item | Detalhe |
 |------|---------|
@@ -193,7 +164,6 @@ Esta extensão foi desenvolvida com **privacidade por design**:
 | **Armazenamento** | `chrome.storage.local` — exclusivo do navegador do usuário |
 | **Telemetria** | Zero — sem analytics, sem tracking externo |
 | **Código** | 100% open source e auditável |
-| **Permissões** | Apenas as necessárias (veja `manifest.json`) |
 
 **Permissões solicitadas:**
 - `storage` — salvar dados localmente
@@ -210,8 +180,8 @@ Esta extensão foi desenvolvida com **privacidade por design**:
 doomscroll-tracker/
 ├── manifest.json        # Declaração da extensão (MV3)
 ├── background.js        # Service worker — coração do rastreamento
-├── popup.html           # Interface principal (340px)
-├── popup.js             # Lógica do popup, tabs, charts, export
+├── popup.html           # Interface principal (340px, 3 abas)
+├── popup.js             # Lógica do popup: tabs, charts, timer, export
 ├── options.html         # Página de opções completa
 ├── options.js           # Lógica das opções
 ├── icons/
@@ -219,8 +189,8 @@ doomscroll-tracker/
 │   ├── icon-32.png
 │   ├── icon-48.png
 │   └── icon-128.png
-├── docs/                # Screenshots e assets para o README
-├── LICENSE
+├── LICENSE              # MIT
+├── CONTRIBUTING.md
 └── README.md
 ```
 
@@ -228,29 +198,25 @@ doomscroll-tracker/
 
 ## 🤝 Contribuindo
 
-Contribuições são muito bem-vindas! Veja como:
+Contribuições são muito bem-vindas!
 
 1. **Fork** este repositório
-2. Crie uma branch: `git checkout -b feature/minha-funcionalidade`
-3. Commit: `git commit -m 'feat: adiciona minha funcionalidade'`
-4. Push: `git push origin feature/minha-funcionalidade`
-5. Abra um **Pull Request**
+2. Crie uma branch: `git checkout -b feature/minha-feature`
+3. Commit seguindo [Conventional Commits](https://www.conventionalcommits.org/pt-br/): `feat: adiciona X`
+4. Abra um **Pull Request**
 
-### Ideias para contribuir
-
-- [ ] Suporte a Firefox (Manifest V3)
-- [ ] Tema claro (light mode)
-- [ ] Widget de meta semanal (ex.: "máx 5h na semana")
-- [ ] Integração com Google Calendar (bloquear horários)
+**Ideias abertas:**
+- [ ] Light mode
+- [ ] Suporte a Firefox
+- [ ] Meta semanal configurável
 - [ ] Companion app mobile (Flutter)
-- [ ] Localization (English, Español)
 - [ ] Publicação na Chrome Web Store
 
 ---
 
 ## 📄 Licença
 
-MIT © 2026 — Veja [LICENSE](LICENSE) para detalhes.
+MIT © 2026 Theo Goulart — Veja [LICENSE](LICENSE) para detalhes.
 
 ---
 
@@ -259,7 +225,5 @@ MIT © 2026 — Veja [LICENSE](LICENSE) para detalhes.
 **Feito com 💜 para ajudar pessoas a retomarem o controle da sua atenção.**
 
 Se esse projeto te ajudou, deixa uma ⭐ — significa muito!
-
-[⬆ Voltar ao topo](#-doomscroll-tracker)
 
 </div>
