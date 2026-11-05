@@ -1,0 +1,33 @@
+# Dependências de Node / bundlers (não usadas, mas por segurança)
+node_modules/
+dist/
+.cache/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+# Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Arquivos temporários
+*.tmp
+*.bak
+
+# Dados de teste locais
+scratch/
+
+# ZIP de build
+*.zip

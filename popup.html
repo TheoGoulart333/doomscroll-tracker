@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<title>Doomscroll Tracker</title>
+<style>
+/* ═══════════════════════════════════════════
+   RESET & TOKENS
+═══════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0d14;
+  --s1:#17171f;
+  --s2:#1f1f2d;
+  --s3:#27273a;
+  --border:rgba(255,255,255,0.07);
+  --accent:#8b5cf6;
+  --accent2:#c084fc;
+  --teal:#2dd4bf;
+  --teal2:#34d399;
+  --rose:#fb7185;
+  --amber:#fbbf24;
+  --text:#eeeef5;
+  --muted:#6b7280;
+  --muted2:#9ca3af;
+  --r:12px;
+  --r2:8px;
+}
+html{font-size:13px}
+body{
+  width:360px;
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  overflow-x:hidden;
+  padding-bottom:4px;
+}
+/* ═══════════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════════ */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--s3);border-radius:4px}
+
+/* ═══════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════ */
+.header{
+  display:flex;align-items:center;gap:10px;
+  padding:16px 16px 12px;
+  background:linear-gradient(180deg,rgba(139,92,246,0.08) 0%,transparent 100%);
+  border-bottom:1px solid var(--border);
+}
+.logo{
+  width:36px;height:36px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:17px;box-shadow:0 0 16px rgba(139,92,246,0.4);
+}
+.h-info{flex:1}
+.h-info h1{font-size:14px;font-weight:700;letter-spacing:-0.3px}
+.h-info p{font-size:10px;color:var(--muted2);margin-top:1px}
+.status-pill{
+  display:flex;align-items:center;gap:5px;
+  padding:4px 9px;border-radius:999px;font-size:10px;font-weight:700;
+  background:rgba(45,212,191,0.1);color:var(--teal);
+  border:1px solid rgba(45,212,191,0.25);cursor:pointer;transition:all .2s;
+}
+.status-pill.paused{
+  background:rgba(251,191,36,0.1);color:var(--amber);
+  border-color:rgba(251,191,36,0.25);
+}
+.status-pill .dot{
+  width:6px;height:6px;border-radius:50%;background:currentColor;
+  animation:pulse 1.6s ease-in-out infinite;
+}
+.status-pill.paused .dot{animation:none;opacity:.6}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+
+/* ═══════════════════════════════════════════
+   MOOD BANNER
+═══════════════════════════════════════════ */
+.mood-banner{
+  margin:12px 16px 0;padding:11px 14px;
+  background:var(--s1);border:1px solid var(--border);border-radius:var(--r);
+  display:flex;align-items:center;gap:10px;
+  animation:slideIn .3s ease;
+}
+@keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.mood-emoji{font-size:22px;flex-shrink:0}
+.mood-text{font-size:12px;line-height:1.4;color:var(--muted2)}
+.mood-text strong{color:var(--text);font-weight:600}
+
+/* ═══════════════════════════════════════════
+   LIVE SESSION PILL
+═══════════════════════════════════════════ */
+.live-session{
+  margin:8px 16px 0;padding:8px 12px;
+  background:rgba(251,113,133,0.08);
+  border:1px solid rgba(251,113,133,0.2);
+  border-radius:var(--r);display:flex;align-items:center;gap:8px;font-size:11px;
+}
+.live-session .ls-icon{font-size:14px}
+.live-session .ls-text{flex:1;color:var(--muted2)}
+.live-session .ls-text strong{color:var(--text)}
+.live-session .ls-time{
+  font-size:11px;font-weight:800;color:var(--rose);
+  font-variant-numeric:tabular-nums;letter-spacing:-0.3px;
+}
+.live-session.hidden{display:none}
+
+/* ═══════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════ */
+.tabs{display:flex;gap:2px;padding:10px 16px 0}
+.tab{
+  flex:1;padding:7px 0;border:none;background:transparent;
+  color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;
+  border-radius:var(--r2);transition:all .15s;text-align:center;
+}
+.tab.active{background:var(--s2);color:var(--text)}
+.tab:hover:not(.active){background:var(--s1);color:var(--muted2)}
+
+/* ═══════════════════════════════════════════
+   PANELS
+═══════════════════════════════════════════ */
+.panel{display:none;padding:12px 16px 0;animation:fadeIn .2s ease}
+.panel.active{display:block}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ═══════════════════════════════════════════
+   HERO CARDS
+═══════════════════════════════════════════ */
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.card{
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:var(--r);padding:12px;position:relative;overflow:hidden;
+  transition:transform .15s;cursor:default;
+}
+.card:hover{transform:translateY(-1px)}
+.card::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+}
+.card.c-today::after{background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.card.c-week::after {background:linear-gradient(90deg,var(--teal),var(--teal2))}
+.card-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);margin-bottom:5px}
+.card-value{font-size:26px;font-weight:800;letter-spacing:-1.2px;line-height:1}
+.card-sub{font-size:10px;color:var(--muted);margin-top:3px}
+.card-delta{font-size:10px;font-weight:700;margin-top:4px}
+.card-delta.up{color:var(--rose)}
+.card-delta.down{color:var(--teal)}
+.card-bg-icon{position:absolute;bottom:8px;right:10px;font-size:24px;opacity:.08}
+
+/* ═══════════════════════════════════════════
+   STREAK
+═══════════════════════════════════════════ */
+.streak-row{
+  display:flex;align-items:center;gap:10px;
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:var(--r);padding:10px 14px;margin-bottom:10px;
+}
+.streak-flame{font-size:22px}
+.streak-info{flex:1}
+.streak-num{font-size:18px;font-weight:800;letter-spacing:-0.5px}
+.streak-desc{font-size:10px;color:var(--muted2)}
+.streak-best{font-size:10px;color:var(--muted);text-align:right}
+.streak-best span{color:var(--amber);font-weight:700}
+
+/* ═══════════════════════════════════════════
+   PROGRESS
+═══════════════════════════════════════════ */
+.progress-block{margin-bottom:10px}
+.progress-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.progress-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted)}
+.progress-pct{font-size:11px;font-weight:800}
+.progress-bar-bg{height:6px;background:var(--s3);border-radius:999px;overflow:hidden}
+.progress-bar-fill{height:100%;border-radius:999px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.pf-low   {background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.pf-mid   {background:linear-gradient(90deg,var(--amber),#f97316)}
+.pf-high  {background:linear-gradient(90deg,var(--rose),#f43f5e)}
+.progress-hint{font-size:10px;color:var(--muted);margin-top:4px}
+
+/* ═══════════════════════════════════════════
+   WEEKLY CHART
+═══════════════════════════════════════════ */
+.chart-block{margin-bottom:10px}
+.section-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);margin-bottom:8px}
+.bars{display:flex;align-items:flex-end;gap:4px;height:60px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%;justify-content:flex-end}
+.bar{
+  width:100%;border-radius:4px 4px 0 0;min-height:3px;
+  background:var(--s3);transition:height .5s cubic-bezier(.4,0,.2,1);
+  position:relative;
+}
+.bar.has-data{background:linear-gradient(180deg,var(--accent2),var(--accent))}
+.bar.is-today{background:linear-gradient(180deg,#fda4af,var(--rose))}
+.bar.over-limit{background:linear-gradient(180deg,#fca5a5,#ef4444)}
+.bar-label{font-size:8.5px;color:var(--muted);letter-spacing:.3px}
+.bar-label.active{color:var(--text);font-weight:700}
+.chart-summary{display:flex;gap:6px;margin-top:8px}
+.chart-pill{
+  flex:1;text-align:center;padding:6px 4px;
+  background:var(--s1);border:1px solid var(--border);border-radius:var(--r2);
+}
+.chart-pill .cp-val{font-size:12px;font-weight:800}
+.chart-pill .cp-lbl{font-size:9px;color:var(--muted);margin-top:1px}
+
+/* ═══════════════════════════════════════════
+   TOP SITES
+═══════════════════════════════════════════ */
+.sites-block{margin-bottom:8px}
+.site-row{display:flex;align-items:center;gap:8px;padding:5px 0}
+.site-row + .site-row{border-top:1px solid var(--border)}
+.site-ico{font-size:14px;width:20px;text-align:center;flex-shrink:0}
+.site-name{flex:1;font-size:11px;color:var(--text)}
+.site-bar-bg{width:60px;height:4px;background:var(--s3);border-radius:999px;overflow:hidden}
+.site-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:999px}
+.site-time{font-size:11px;font-weight:700;color:var(--muted2);min-width:30px;text-align:right}
+.empty-state{text-align:center;padding:16px 0;color:var(--muted);font-size:11px;line-height:1.6}
+.empty-state .e-emoji{font-size:26px;margin-bottom:6px}
+
+/* ═══════════════════════════════════════════
+   SESSIONS (panel semana)
+═══════════════════════════════════════════ */
+.sessions-block{margin-bottom:8px}
+.session-item{
+  display:flex;align-items:center;gap:8px;padding:5px 0;
+  font-size:11px;
+}
+.session-item+.session-item{border-top:1px solid var(--border)}
+.si-domain{flex:1;color:var(--text)}
+.si-date{font-size:10px;color:var(--muted)}
+.si-time{font-weight:700;color:var(--muted2)}
+
+/* ═══════════════════════════════════════════
+   SETTINGS PANEL
+═══════════════════════════════════════════ */
+.settings-block{margin-bottom:12px}
+.set-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:6px}
+.set-row{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--s1);border:1px solid var(--border);border-radius:var(--r2);margin-bottom:6px}
+.set-row-label{flex:1;font-size:12px;color:var(--text)}
+.set-row-sub{font-size:10px;color:var(--muted)}
+
+/* Toggle switch */
+.toggle{position:relative;width:36px;height:20px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{
+  position:absolute;inset:0;background:var(--s3);border-radius:999px;cursor:pointer;transition:.2s;
+}
+.toggle input:checked + .toggle-slider{background:var(--accent)}
+.toggle-slider::before{
+  content:'';position:absolute;top:3px;left:3px;
+  width:14px;height:14px;border-radius:50%;background:#fff;
+  transition:.2s;
+}
+.toggle input:checked + .toggle-slider::before{transform:translateX(16px)}
+
+/* Slider range */
+.limit-slider-wrap{flex:1}
+.limit-slider{width:100%;accent-color:var(--accent);cursor:pointer}
+.limit-val{font-size:12px;font-weight:800;min-width:50px;text-align:right;color:var(--accent2)}
+
+/* Domain chips */
+.domain-chips{display:flex;flex-wrap:wrap;gap:5px;padding:8px 10px;background:var(--s1);border:1px solid var(--border);border-radius:var(--r2)}
+.chip{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 8px;background:var(--s2);border:1px solid var(--border);
+  border-radius:999px;font-size:10px;color:var(--muted2);
+}
+.chip .rm{cursor:pointer;color:var(--muted);transition:color .15s}
+.chip .rm:hover{color:var(--rose)}
+.add-domain-row{display:flex;gap:6px;margin-top:6px}
+.add-input{
+  flex:1;padding:7px 10px;background:var(--s2);border:1px solid var(--border);
+  border-radius:var(--r2);color:var(--text);font-size:11px;outline:none;
+}
+.add-input:focus{border-color:var(--accent)}
+.add-input::placeholder{color:var(--muted)}
+
+/* ═══════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  padding:9px 14px;border-radius:var(--r2);font-size:12px;font-weight:700;
+  cursor:pointer;border:none;transition:all .15s;
+}
+.btn-sm{padding:6px 10px;font-size:11px;border-radius:6px}
+.btn-ghost{background:var(--s1);color:var(--muted2);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--s2);color:var(--text)}
+.btn-accent{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 2px 12px rgba(139,92,246,.35)}
+.btn-accent:hover{filter:brightness(1.1)}
+.btn-danger{background:rgba(251,113,133,.1);color:var(--rose);border:1px solid rgba(251,113,133,.25)}
+.btn-danger:hover{background:rgba(251,113,133,.18)}
+.btn-teal{background:rgba(45,212,191,.1);color:var(--teal);border:1px solid rgba(45,212,191,.25)}
+.btn-teal:hover{background:rgba(45,212,191,.18)}
+
+.footer{display:flex;gap:6px;padding:12px 16px 14px;border-top:1px solid var(--border);margin-top:4px}
+.footer .btn{flex:1}
+
+/* Save button in settings */
+.save-row{display:flex;justify-content:flex-end;margin-top:4px}
+
+/* confetti */
+.confetti-wrap{position:fixed;top:0;left:0;right:0;pointer-events:none;z-index:999}
+.conf{position:absolute;width:8px;height:8px;border-radius:2px;animation:fall 1.6s ease-in forwards}
+@keyframes fall{
+  0%{opacity:1;transform:translateY(-10px) rotate(0)}
+  100%{opacity:0;transform:translateY(380px) rotate(540deg)}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">📵</div>
+  <div class="h-info">
+    <h1>Doomscroll Tracker</h1>
+    <p id="h-date">Carregando…</p>
+  </div>
+  <div class="status-pill" id="pause-btn" title="Pausar/Retomar rastreamento">
+    <span class="dot"></span>
+    <span id="status-text">Ativo</span>
+  </div>
+</div>
+
+<!-- MOOD BANNER -->
+<div class="mood-banner" id="mood-banner">
+  <div class="mood-emoji" id="mood-emoji">😌</div>
+  <div class="mood-text" id="mood-text"><strong>Tudo certo por aqui!</strong><br>Você ainda não acessou nenhum site monitorado hoje.</div>
+</div>
+
+<!-- LIVE SESSION -->
+<div class="live-session hidden" id="live-session">
+  <div class="ls-icon">📱</div>
+  <div class="ls-text">Agora em <strong id="ls-domain">—</strong></div>
+  <div class="ls-time" id="ls-elapsed">0 min</div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" data-tab="today">Hoje</button>
+  <button class="tab" data-tab="week">Semana</button>
+  <button class="tab" data-tab="settings">Configurações</button>
+</div>
+
+<!-- ══════════ PANEL: HOJE ══════════ -->
+<div class="panel active" id="panel-today">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="card c-today">
+      <div class="card-label">Hoje</div>
+      <div class="card-value" id="today-val">0</div>
+      <div class="card-sub" id="today-unit">minutos</div>
+      <div class="card-delta" id="today-delta"></div>
+      <div class="card-bg-icon">🌙</div>
+    </div>
+    <div class="card c-week">
+      <div class="card-label">Esta semana</div>
+      <div class="card-value" id="week-val">0</div>
+      <div class="card-sub" id="week-unit">minutos</div>
+      <div class="card-delta" id="week-delta"></div>
+      <div class="card-bg-icon">📅</div>
+    </div>
+  </div>
+
+  <!-- Streak -->
+  <div class="streak-row">
+    <div class="streak-flame" id="streak-flame">🔥</div>
+    <div class="streak-info">
+      <div class="streak-num" id="streak-num">0</div>
+      <div class="streak-desc" id="streak-desc">dias abaixo do limite</div>
+    </div>
+    <div class="streak-best">Recorde<br><span id="best-streak">0</span> dias</div>
+  </div>
+
+  <!-- Limit progress -->
+  <div class="progress-block">
+    <div class="progress-row">
+      <span class="progress-label">Limite diário</span>
+      <span class="progress-pct" id="limit-pct" style="color:var(--accent2)">0%</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill pf-low" id="limit-bar" style="width:0%"></div>
+    </div>
+    <div class="progress-hint" id="limit-hint">Meta: 60 min/dia</div>
+  </div>
+
+  <!-- Top sites today -->
+  <div class="sites-block">
+    <div class="section-label">Sites hoje</div>
+    <div id="sites-today">
+      <div class="empty-state">
+        <div class="e-emoji">👀</div>
+        Nada registrado ainda hoje.
+      </div>
+    </div>
+  </div>
+
+</div><!-- /panel-today -->
+
+<!-- ══════════ PANEL: SEMANA ══════════ -->
+<div class="panel" id="panel-week">
+
+  <!-- Weekly chart -->
+  <div class="chart-block">
+    <div class="section-label">Últimos 7 dias</div>
+    <div class="bars" id="weekly-bars"></div>
+    <div class="chart-summary" id="chart-summary"></div>
+  </div>
+
+  <!-- Top sites week -->
+  <div class="sites-block">
+    <div class="section-label">Sites mais acessados</div>
+    <div id="sites-week"></div>
+  </div>
+
+  <!-- Recent sessions -->
+  <div class="sessions-block">
+    <div class="section-label">Sessões recentes</div>
+    <div id="sessions-list"></div>
+  </div>
+
+  <!-- Export -->
+  <div style="margin-bottom:4px">
+    <button class="btn btn-teal btn-sm" id="export-btn" style="width:100%">📥 Exportar CSV</button>
+  </div>
+
+</div><!-- /panel-week -->
+
+<!-- ══════════ PANEL: CONFIGURAÇÕES ══════════ -->
+<div class="panel" id="panel-settings">
+
+  <!-- Limit -->
+  <div class="settings-block">
+    <div class="set-label">Limite diário</div>
+    <div class="set-row">
+      <div>
+        <div class="set-row-label">Alerta quando atingir</div>
+        <div class="set-row-sub">Receba notificação ao chegar no limite</div>
+      </div>
+      <div class="limit-slider-wrap">
+        <input type="range" class="limit-slider" id="limit-input" min="10" max="300" step="5" value="60">
+      </div>
+      <div class="limit-val" id="limit-display">60 min</div>
+    </div>
+  </div>
+
+  <!-- Notifications -->
+  <div class="settings-block">
+    <div class="set-label">Notificações</div>
+    <div class="set-row">
+      <div>
+        <div class="set-row-label">Alertas de limite</div>
+        <div class="set-row-sub">Aviso ao atingir 80% e 100%</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="notif-toggle" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Domains -->
+  <div class="settings-block">
+    <div class="set-label">Sites monitorados</div>
+    <div class="domain-chips" id="domain-chips"></div>
+    <div class="add-domain-row">
+      <input class="add-input" id="domain-input" type="text" placeholder="ex: twitch.tv">
+      <button class="btn btn-ghost btn-sm" id="domain-add-btn">+ Adicionar</button>
+    </div>
+  </div>
+
+  <div class="save-row">
+    <button class="btn btn-accent btn-sm" id="save-settings-btn">💾 Salvar configurações</button>
+  </div>
+</div><!-- /panel-settings -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <button class="btn btn-ghost" id="options-btn">⚙️ Mais opções</button>
+  <button class="btn btn-danger" id="reset-btn">🗑️ Resetar tudo</button>
+</div>
+
+<!-- Confetti container -->
+<div class="confetti-wrap" id="confetti-wrap"></div>
+
+<script src="popup.js"></script>
+</body>
+</html>
