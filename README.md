@@ -88,34 +88,13 @@ Atualizações preservam configurações e histórico local. O tempo da aba atua
 
 ## Como funciona
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                       CHROME BROWSER                        │
-│                                                             │
-│  ┌──────────────────┐       ┌──────────────────────────┐   │
-│  │  background.js   │◄─────►│      popup.html / js     │   │
-│  │  (service worker)│       │                          │   │
-│  │                  │       │  Aba Hoje:               │   │
-│  │  • Detecta URL   │       │   timer ao vivo          │   │
-│  │  • Conta tempo   │       │   streak, mood, top sites│   │
-│  │  • Salva sessões │       │                          │   │
-│  │  • Streaks       │       │  Aba Semana:             │   │
-│  │  • Notificações  │       │   gráfico 7 dias         │   │
-│  └────────┬─────────┘       │   export CSV             │   │
-│           │                 │                          │   │
-│           ▼                 │  Aba Configurações:      │   │
-│  ┌──────────────────┐       │   limite, notifs, sites  │   │
-│  │ chrome.storage   │       └──────────────────────────┘   │
-│  │ .local           │                                       │
-│  │                  │  ← 100% local, sem servidores         │
-│  │  daily: {...}    │                                       │
-│  │  weekly: {...}   │                                       │
-│  │  siteDaily: {...}│                                       │
-│  │  sessions: [...] │                                       │
-│  │  streak: 5       │                                       │
-│  │  dailyLimit: 60  │                                       │
-│  └──────────────────┘                                       │
-└─────────────────────────────────────────────────────────────┘
+Tudo acontece dentro do Chrome. O popup pede os dados ao service worker; o worker acompanha os sites escolhidos e grava as estatísticas no armazenamento local.
+
+```mermaid
+flowchart LR
+  Popup["Popup<br/>Hoje · Semana · Ajustes"] <-->|Solicita e mostra dados| Worker["Service worker<br/>Acompanha sites e contabiliza tempo"]
+  Worker -->|Totais, metas e sessões| Local[("chrome.storage.local<br/>Histórico e preferências")]
+  Worker -->|Sessão ativa| Session[("chrome.storage.session<br/>Temporário no navegador")]
 ```
 
 ### Fluxo de rastreamento
