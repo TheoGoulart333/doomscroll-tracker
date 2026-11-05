@@ -45,6 +45,14 @@ async function getSetting(key, def) {
 async function getTrackedDomains() {
   return getSetting('trackedDomains', DEFAULT_DOMAINS);
 }
+function registerChromeListener(event, handler, eventName) {
+  if (!event || typeof event.addListener !== 'function') {
+    console.error(`Doomscroll Tracker: Chrome event unavailable: ${eventName}`);
+    return false;
+  }
+  event.addListener(handler);
+  return true;
+}
 async function matchesDoomscroll(url) {
   const domain  = extractDomain(url);
   if (!domain) return null;
@@ -63,7 +71,7 @@ async function updateBadge(todayMin) {
 
 // Badge live update every minute while tracking
 chrome.alarms.create('badge_tick', { periodInMinutes: 1 });
-chrome.alarms.onAlarm.addListener(async alarm => {
+registerChromeListener(chrome.alarms?.onAlarm, async alarm => {
   if (alarm.name === 'badge_tick') {
     await restoreTrackingSession();
     const { daily = {} } = await chrome.storage.local.get('daily');
@@ -77,7 +85,7 @@ chrome.alarms.onAlarm.addListener(async alarm => {
   if (alarm.name === 'weekly_report') {
     await sendWeeklyReport();
   }
-});
+}, 'chrome.alarms.onAlarm');
 
 // ── Tracking ─────────────────────────────────────────────────
 
@@ -230,7 +238,7 @@ function rebuildContextMenu(lang = 'pt-BR') {
   });
 }
 
-chrome.contextMenus.onClicked.addListener((info, tab) => {
+registerChromeListener(chrome.contextMenus?.onClicked, (info, tab) => {
   if (info.menuItemId !== 'toggle-track-site') return;
   const domain = extractDomain(tab?.url || '');
   if (!domain) return;
@@ -252,41 +260,41 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
       });
     })();
   });
-});
+}, 'chrome.contextMenus.onClicked');
 
 // ── Listeners ─────────────────────────────────────────────────
 
-chrome.tabs.onActivated.addListener(async info => {
+registerChromeListener(chrome.tabs?.onActivated, async info => {
   try {
     const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
     if (!tab || tab.id !== info.tabId) return;
     await stopTracking();
     await startTracking(tab.id, tab.url || '');
   } catch {}
-});
-chrome.tabs.onUpdated.addListener(async (tabId, changeInfo) => {
+}, 'chrome.tabs.onActivated');
+registerChromeListener(chrome.tabs?.onUpdated, async (tabId, changeInfo) => {
   if (!changeInfo.url) return;
   const [activeTab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
   if (!activeTab || activeTab.id !== tabId) return;
   await stopTracking();
   await startTracking(tabId, changeInfo.url);
-});
-chrome.windows.onFocusChanged.addListener(async windowId => {
+}, 'chrome.tabs.onUpdated');
+registerChromeListener(chrome.windows?.onFocusChanged, async windowId => {
   if (windowId === chrome.windows.WINDOW_ID_NONE) { await stopTracking(); return; }
   const [tab] = await chrome.tabs.query({ active: true, windowId });
   await stopTracking();
   if (tab) await startTracking(tab.id, tab.url || '');
-});
-chrome.tabs.onRemoved.addListener(async tabId => {
+}, 'chrome.windows.onFocusChanged');
+registerChromeListener(chrome.tabs?.onRemoved, async tabId => {
   if (tabId === activeTabId) await stopTracking();
-});
-chrome.idle.onStateChanged.addListener(async state => {
+}, 'chrome.tabs.onRemoved');
+registerChromeListener(chrome.idle?.onStateChanged, async state => {
   if (state !== 'active') await stopTracking();
   else {
     const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
     if (tab) await startTracking(tab.id, tab.url || '');
   }
-});
+}, 'chrome.idle.onStateChanged');
 
 async function restoreTrackingSession() {
   if (activeTabId !== null) return;
@@ -305,11 +313,11 @@ async function resumeActiveTab() {
   const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
   if (tab) await startTracking(tab.id, tab.url || '');
 }
-chrome.runtime.onStartup.addListener(async () => {
+registerChromeListener(chrome.runtime?.onStartup, async () => {
   await chrome.storage.session.remove('trackingSession');
   activeTabId = null; startTimestamp = null; activeDomain = null;
   await resumeActiveTab();
-});
+}, 'chrome.runtime.onStartup');
 
 // Midnight reset
 chrome.alarms.create('midnight_reset', { when: getNextMidnight(), periodInMinutes: 1440 });
@@ -317,7 +325,7 @@ function getNextMidnight() {
   const d = new Date(); d.setHours(24, 0, 0, 0); return d.getTime();
 }
 
-chrome.runtime.onInstalled.addListener(async ({ reason }) => {
+registerChromeListener(chrome.runtime?.onInstalled, async ({ reason }) => {
   const defaults = {
     trackedDomains: DEFAULT_DOMAINS,
     daily: {}, weekly: {}, siteDaily: {}, sessions: [],
@@ -340,11 +348,11 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   }
   if (reason === 'install') await chrome.action.setBadgeText({ text: '' });
   await resumeActiveTab();
-});
+}, 'chrome.runtime.onInstalled');
 
 // ── Messages ──────────────────────────────────────────────────
 
-chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
+registerChromeListener(chrome.runtime?.onMessage, (req, sender, sendResponse) => {
 
   if (req.type === 'getStats') {
     (async () => {
@@ -451,4 +459,4 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
     chrome.storage.local.set({ onboardingDone: true }, () => sendResponse({ ok: true }));
     return true;
   }
-});
+}, 'chrome.runtime.onMessage');
