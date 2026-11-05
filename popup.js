@@ -2,17 +2,17 @@
 
 // ── Dados de domínio ──────────────────────────────────────────
 const DOMAIN_META = {
-  'reddit.com':    { icon:'🤖', color:'#ff4500' },
-  'twitter.com':   { icon:'🐦', color:'#1da1f2' },
-  'x.com':         { icon:'𝕏',  color:'#ffffff' },
-  'youtube.com':   { icon:'▶️', color:'#ff0000' },
-  'instagram.com': { icon:'📸', color:'#e1306c' },
-  'tiktok.com':    { icon:'🎵', color:'#69c9d0' },
-  'facebook.com':  { icon:'👥', color:'#1877f2' },
-  'huffpost.com':  { icon:'📰', color:'#00aeef' },
-  'buzzfeed.com':  { icon:'🐝', color:'#ee3322' },
-  'twitch.tv':     { icon:'🎮', color:'#9146ff' },
-  'linkedin.com':  { icon:'💼', color:'#0a66c2' },
+  'reddit.com':    { color:'#ff705d' },
+  'twitter.com':   { color:'#75aee5' },
+  'x.com':         { color:'#d4d2dc' },
+  'youtube.com':   { color:'#df7777' },
+  'instagram.com': { color:'#cb8ba4' },
+  'tiktok.com':    { color:'#79b2b6' },
+  'facebook.com':  { color:'#7d9fc9' },
+  'huffpost.com':  { color:'#76aebe' },
+  'buzzfeed.com':  { color:'#d77a73' },
+  'twitch.tv':     { color:'#a18ad0' },
+  'linkedin.com':  { color:'#729bbd' },
 };
 
 const DAYS_SHORT = { 'pt-BR':['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'], en:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] };
@@ -26,18 +26,18 @@ let currentLang    = 'pt-BR';
 
 const COPY = {
   'pt-BR': {
-    today:'Hoje', week:'Semana', settings:'Ajustes', active:'Contando', paused:'Pausado',
+    today:'Hoje', week:'Semana', settings:'Ajustes', active:'Ativo', paused:'Pausado', permissionNeeded:'Acesso pendente',
     minutes:'minutos', hours:'horas', day:'dia', days:'dias', record:'Recorde',
     todayCompare:'vs ontem', weekCompare:'vs semana passada',
     limitReached:'Limite alcançado por hoje. Se puder, faça uma pausa.',
     noSites:'Nenhum site monitorado por enquanto.',
-    startTitle:'Seu tempo, com mais intenção.', startCopy:'Acompanhe seus hábitos sem julgamentos. Você escolhe quais sites entram na conta e define seu próprio ritmo.',
-    privacy:'🔒 Seus dados ficam neste navegador. O Doomscroll Tracker não envia histórico para nenhum servidor.',
-    language:'Idioma', start:'Ativar monitoramento', skip:'Continuar sem monitorar', permissionExplainer:'O Chrome vai pedir acesso apenas aos sites da sua lista, para reconhecer quando você está neles.', permissionDenied:'Sem esse acesso, a extensão não consegue contar o tempo. Você pode tentar de novo ou continuar sem monitorar por enquanto.', permissionMissing:'Para contar o tempo, escolha os sites e autorize o acesso a eles em Configurações.', savePermissionDenied:'O acesso aos sites não foi autorizado; as alterações não foram salvas.', saved:'Ajustes salvos.', limit:'Limite diário', weekLabel:'Esta semana',
+    startTitle:'Perceba para onde vai seu tempo.', startCopy:'Veja quanto tempo você passa nos sites que escolheu acompanhar. Seus dados ficam com você e a extensão não julga seu uso.',
+    privacy:'Seus dados ficam neste navegador. O Doomscroll Tracker não envia histórico para nenhum servidor.',
+    language:'Idioma', start:'Ativar monitoramento', skip:'Continuar sem monitorar', permissionExplainer:'O Chrome vai pedir acesso apenas aos sites da sua lista, para reconhecer quando você está neles.', permissionDenied:'Sem esse acesso, a extensão não consegue contar o tempo. Você pode tentar de novo ou continuar sem monitorar por enquanto.', permissionMissing:'Para contar o tempo, escolha os sites e autorize o acesso a eles em Configurações.', savePermissionDenied:'O acesso aos sites não foi autorizado; as alterações não foram salvas.', saved:'Ajustes salvos.', loadError:'Não foi possível carregar seus dados', loadErrorCopy:'A extensão não respondeu desta vez. Tente novamente ou recarregue a extensão em chrome://extensions.', retry:'Tentar novamente', limit:'Limite diário', weekLabel:'Esta semana',
     streak:'dias dentro da sua meta', streakStart:'Seu primeiro dia começa hoje',
     goal:'Meta: {limit} min/dia — {left} min restantes', left:'{left} min restantes hoje',
     hit:'Limite alcançado ({limit} min)', sitesToday:'Sites hoje', last7:'Últimos 7 dias',
-    topSites:'Sites mais acessados', sessions:'Sessões recentes', export:'📥 Exportar CSV',
+    topSites:'Sites mais acessados', sessions:'Sessões recentes', export:'Exportar CSV',
     avg:'Média (min)', best:'Menor uso', worst:'Maior uso',
     alert:'Alertas de limite', alertSub:'Avisos ao chegar a 80% e 100%',
     setLimit:'Aviso ao atingir', setLimitSub:'Escolha uma referência diária que faça sentido para você',
@@ -49,18 +49,18 @@ const COPY = {
     progress:'Você já chegou à sua meta de hoje. Uma pausa pode ajudar.',
   },
   en: {
-    today:'Today', week:'Week', settings:'Settings', active:'Tracking', paused:'Paused',
+    today:'Today', week:'Week', settings:'Settings', active:'On', paused:'Paused', permissionNeeded:'Access needed',
     minutes:'minutes', hours:'hours', day:'day', days:'days', record:'Best',
     todayCompare:'vs yesterday', weekCompare:'vs last week',
     limitReached:'That’s your daily goal. Consider taking a break.',
     noSites:'No tracked sites yet.',
-    startTitle:'Make more room for your time.', startCopy:'Notice your habits without judgment. Choose which sites count and set a pace that feels right for you.',
-    privacy:'🔒 Your data stays in this browser. Doomscroll Tracker never sends your browsing history to a server.',
-    language:'Language', start:'Enable tracking', skip:'Continue without tracking', permissionExplainer:'Chrome will ask for access only to sites in your list so the extension can recognize when you visit them.', permissionDenied:'Without this access, the extension cannot count time. Try again or continue without tracking for now.', permissionMissing:'To count time, choose sites and allow access to them in Settings.', savePermissionDenied:'Site access was not granted, so settings were not saved.', saved:'Settings saved.', limit:'Daily goal', weekLabel:'This week',
+    startTitle:'See where your time goes.', startCopy:'Notice how long you spend on the sites you choose. Your data stays with you, and there is no judgment about how you use your time.',
+    privacy:'Your data stays in this browser. Doomscroll Tracker never sends your browsing history to a server.',
+    language:'Language', start:'Enable tracking', skip:'Continue without tracking', permissionExplainer:'Chrome will ask for access only to sites in your list so the extension can recognize when you visit them.', permissionDenied:'Without this access, the extension cannot count time. Try again or continue without tracking for now.', permissionMissing:'To count time, choose sites and allow access to them in Settings.', savePermissionDenied:'Site access was not granted, so settings were not saved.', saved:'Settings saved.', loadError:'Your data could not be loaded', loadErrorCopy:'The extension did not respond this time. Try again or reload it from chrome://extensions.', retry:'Try again', limit:'Daily goal', weekLabel:'This week',
     streak:'days within your goal', streakStart:'Today is a fresh start',
     goal:'Goal: {limit} min/day — {left} min left', left:'{left} min left today',
     hit:'Daily goal reached ({limit} min)', sitesToday:'Sites today', last7:'Last 7 days',
-    topSites:'Most visited sites', sessions:'Recent sessions', export:'📥 Export CSV',
+    topSites:'Most visited sites', sessions:'Recent sessions', export:'Export CSV',
     avg:'Average (min)', best:'Lowest day', worst:'Highest use',
     alert:'Goal alerts', alertSub:'Alerts at 80% and 100%',
     setLimit:'Daily goal', setLimitSub:'Choose a daily reference that works for you',
@@ -80,6 +80,9 @@ function applyLanguage(lang) {
   document.getElementById('welcome-copy').textContent = tr('startCopy');
   document.getElementById('welcome-privacy').textContent = tr('privacy');
   document.getElementById('permission-explainer').textContent = tr('permissionExplainer');
+  document.getElementById('load-error-title').textContent = tr('loadError');
+  document.getElementById('load-error-copy').textContent = tr('loadErrorCopy');
+  document.getElementById('load-retry').textContent = tr('retry');
   document.getElementById('welcome-skip').textContent = tr('skip');
   document.getElementById('welcome-language-label').textContent = tr('language');
   document.getElementById('welcome-start').textContent = tr('start');
@@ -105,11 +108,11 @@ function applyLanguage(lang) {
   document.getElementById('domain-add-btn').textContent = tr('add');
   document.getElementById('export-btn').textContent = tr('export');
   document.getElementById('save-settings-btn').textContent = tr('save');
-  document.getElementById('options-btn').textContent = `⚙️ ${tr('more')}`;
-  document.getElementById('reset-btn').textContent = `⌫ ${tr('reset')}`;
+  document.getElementById('options-btn').textContent = tr('more');
+  document.getElementById('reset-btn').textContent = tr('reset');
   document.getElementById('language-input').value = currentLang;
   document.getElementById('welcome-lang').value = currentLang;
-  if (statsCache && Object.keys(statsCache).length) { renderToday(statsCache); renderWeek(statsCache); updateStatusPill(statsCache.isPaused); }
+  if (statsCache && Object.keys(statsCache).length) { renderToday(statsCache); renderWeek(statsCache); updateStatusPill(statsCache.isPaused, statsCache.trackingPermissionGranted); }
 }
 
 
@@ -136,42 +139,44 @@ function fmtLive(seconds) {
   return `${m}:${String(s).padStart(2,'0')}`;
 }
 
-function domainIcon(d)  { return (DOMAIN_META[d] || {}).icon  || '🌐'; }
+function domainIcon(d)  { return (d.replace(/^www\./, '').charAt(0) || '?').toUpperCase(); }
 
 // ── Mensagens dinâmicas (com personalidade) ────────────────────
 
 function getMood(todayMin, limit) {
   const pct = (todayMin/limit)*100;
   if (todayMin === 0)
-    return { emoji:'😌', text:currentLang === 'en' ? '<strong>A fresh start.</strong><br>No tracked time yet today.' : '<strong>Um novo dia por aqui.</strong><br>Nenhum tempo monitorado ainda.' };
+    return { text:currentLang === 'en' ? '<strong>Nothing recorded yet.</strong><br>Time starts counting when you visit a site on your list.' : '<strong>Nada registrado ainda.</strong><br>A contagem começa quando você visita um site da lista.' };
   if (pct <= 20)
-    return { emoji:'🌿', text:currentLang === 'en' ? `<strong>A calm start.</strong><br>${todayMin} min of tracked time today.` : `<strong>Um começo tranquilo.</strong><br>${todayMin} min de tempo monitorado hoje.` };
+    return { text:currentLang === 'en' ? `<strong>A calm start.</strong><br>${todayMin} min of tracked time today.` : `<strong>Um começo tranquilo.</strong><br>${todayMin} min de tempo monitorado hoje.` };
   if (pct <= 50)
-    return { emoji:'😐', text:currentLang === 'en' ? `<strong>Steady so far.</strong><br>${todayMin} min of tracked time.` : `<strong>Até aqui, tudo bem.</strong><br>${todayMin} min de tempo monitorado.` };
+    return { text:currentLang === 'en' ? `<strong>Steady so far.</strong><br>${todayMin} min of tracked time.` : `<strong>Até aqui, tudo bem.</strong><br>${todayMin} min de tempo monitorado.` };
   if (pct <= 70)
-    return { emoji:'🌿', text:currentLang === 'en' ? `<strong>Getting close to your goal.</strong><br>${todayMin} min today. A short pause can help.` : `<strong>Chegando perto da sua meta.</strong><br>${todayMin} min hoje. Uma pausa pode ajudar.` };
+    return { text:currentLang === 'en' ? `<strong>Getting close to your goal.</strong><br>${todayMin} min today. A short pause can help.` : `<strong>Chegando perto da sua meta.</strong><br>${todayMin} min hoje. Uma pausa pode ajudar.` };
   if (pct <= 90)
-    return { emoji:'🌿', text:currentLang === 'en' ? `<strong>You’re near your goal.</strong><br>${limit - todayMin} min left, if you want to keep track.` : `<strong>Você está perto da sua meta.</strong><br>Restam ${limit - todayMin} min, se quiser seguir acompanhando.` };
+    return { text:currentLang === 'en' ? `<strong>You’re near your goal.</strong><br>${limit - todayMin} min left, if you want to keep track.` : `<strong>Você está perto da sua meta.</strong><br>Restam ${limit - todayMin} min, se quiser seguir acompanhando.` };
   if (pct < 100)
-    return { emoji:'🌿', text:currentLang === 'en' ? `<strong>Almost at your goal.</strong><br>${limit - todayMin} min remaining today.` : `<strong>Quase na sua meta.</strong><br>Restam ${limit - todayMin} min hoje.` };
-  return { emoji:'🌱', text:`<strong>${tr('limitReached')}</strong><br>${currentLang === 'en' ? 'You can adjust this goal any time.' : 'Você pode mudar essa meta quando quiser.'}` };
+    return { text:currentLang === 'en' ? `<strong>Almost at your goal.</strong><br>${limit - todayMin} min remaining today.` : `<strong>Quase na sua meta.</strong><br>Restam ${limit - todayMin} min hoje.` };
+  return { text:`<strong>${tr('limitReached')}</strong><br>${currentLang === 'en' ? 'You can adjust this goal any time.' : 'Você pode mudar essa meta quando quiser.'}` };
 }
 
 function getStreakMessage(streak) {
   if (streak === 0) return tr('streakStart');
-  if (streak === 1) return currentLang === 'en' ? 'First day within your goal 👏' : 'Primeiro dia dentro da sua meta 👏';
+  if (streak === 1) return currentLang === 'en' ? 'First day within your goal' : 'Primeiro dia dentro da sua meta';
   if (streak < 4)  return currentLang === 'en' ? `${streak} days within your goal` : `${streak} dias dentro da sua meta`;
-  if (streak < 7)  return currentLang === 'en' ? `${streak} days in a row — nice work` : `${streak} dias seguidos — bom ritmo`;
-  if (streak < 14) return currentLang === 'en' ? `${streak} days — impressive 🌟` : `${streak} dias — que sequência 🌟`;
-  return currentLang === 'en' ? `${streak} days in a row 🏆` : `${streak} dias seguidos 🏆`;
+  if (streak < 7)  return currentLang === 'en' ? `${streak} days in a row` : `${streak} dias seguidos`;
+  if (streak < 14) return currentLang === 'en' ? `${streak} days within your goal` : `${streak} dias dentro da sua meta`;
+  return currentLang === 'en' ? `${streak} days in a row` : `${streak} dias seguidos`;
 }
 
 // ── Carrega dados ─────────────────────────────────────────────
 
 async function loadStats() {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => reject(new Error('Stats request timed out')), 5000);
     chrome.runtime.sendMessage({ type:'getStats' }, res => {
-      if (chrome.runtime.lastError || !res) return resolve({});
+      clearTimeout(timeout);
+      if (chrome.runtime.lastError || !res || res.error) return reject(new Error('Stats request failed'));
       resolve(res);
     });
   });
@@ -215,16 +220,15 @@ function renderToday(s) {
 
   // Mood
   const mood = s.trackingPermissionGranted === false
-    ? { emoji:'🔒', text:`<strong>${tr('permissionMissing')}</strong>` }
+    ? { text:`<strong>${tr('permissionMissing')}</strong>` }
     : getMood(today, limit);
-  document.getElementById('mood-emoji').textContent = mood.emoji;
   document.getElementById('mood-text').innerHTML    = mood.text;
 
   // Streak
   document.getElementById('streak-num').textContent   = streak;
   document.getElementById('streak-desc').textContent  = getStreakMessage(streak);
   document.getElementById('best-streak').textContent  = bestStreak;
-  document.getElementById('streak-flame').textContent = streak >= 7 ? '🏆' : streak >= 3 ? '🔥' : '🌱';
+  document.getElementById('streak-flame').textContent = '';
 
   // Progress bar
   const pct  = Math.min(Math.round((today/limit)*100), 100);
@@ -254,8 +258,6 @@ function renderToday(s) {
   if (s.liveSession && liveMinutes > 0) todaySites[s.liveSession.domain] = (todaySites[s.liveSession.domain] || 0) + liveMinutes;
   renderSites('sites-today', todaySites);
 
-  // Celebração se streak novo > 3
-  if (streak > 3 && today === 0) triggerConfetti();
 }
 
 // ── Render: Semana ─────────────────────────────────────────────
@@ -322,14 +324,16 @@ function renderWeek(s) {
   // Sessions
   const sessEl = document.getElementById('sessions-list');
   if (!sessions.length) {
-    sessEl.innerHTML = `<div class="empty-state"><div class="e-emoji">📋</div>${tr('emptySessions')}</div>`;
+    sessEl.textContent = tr('emptySessions');
+    sessEl.className = 'empty-state';
     return;
   }
+  sessEl.className = '';
   sessEl.innerHTML = '';
   sessions.slice(0,6).forEach(s => {
     const item = document.createElement('div');
     item.className = 'session-item';
-    const icon = document.createElement('span'); icon.style.fontSize = '14px'; icon.textContent = domainIcon(s.domain);
+    const icon = document.createElement('span'); icon.className = 'site-ico'; icon.textContent = domainIcon(s.domain); icon.style.color = (DOMAIN_META[s.domain] || {}).color || 'var(--accent2)';
     const domain = document.createElement('span'); domain.className = 'si-domain'; domain.textContent = s.domain;
     const date = document.createElement('span'); date.className = 'si-date'; date.textContent = `${s.date} ${s.start}`;
     const duration = document.createElement('span'); duration.className = 'si-time'; duration.textContent = `${s.minutes}m`;
@@ -344,17 +348,19 @@ function renderSites(containerId, sitesObj) {
   const el     = document.getElementById(containerId);
   const sorted = Object.entries(sitesObj).sort((a,b)=>b[1]-a[1]).slice(0,5);
   if (!sorted.length) {
-    el.innerHTML = `<div class="empty-state"><div class="e-emoji">👀</div>${tr('noSites')}</div>`;
+    el.textContent = tr('noSites');
+    el.className = 'empty-state';
     return;
   }
   const maxVal = sorted[0][1];
+  el.className = '';
   el.innerHTML = '';
   sorted.forEach(([domain,min]) => {
     const pct  = Math.round((min/maxVal)*100);
     const icon = domainIcon(domain);
     const row = document.createElement('div');
     row.className = 'site-row';
-    const ico = document.createElement('div'); ico.className = 'site-ico'; ico.textContent = icon;
+    const ico = document.createElement('div'); ico.className = 'site-ico'; ico.textContent = icon; ico.style.color = (DOMAIN_META[domain] || {}).color || 'var(--accent2)';
     const name = document.createElement('div'); name.className = 'site-name'; name.textContent = domain;
     const track = document.createElement('div'); track.className = 'site-bar-bg';
     const fill = document.createElement('div'); fill.className = 'site-bar-fill'; fill.style.width = `${pct}%`;
@@ -387,7 +393,7 @@ function renderDomainChips() {
   currentDomains.forEach((d,i) => {
     const chip = document.createElement('div');
     chip.className = 'chip';
-    const label = document.createElement('span'); label.textContent = `${domainIcon(d)} ${d}`;
+    const label = document.createElement('span'); label.textContent = d;
     const remove = document.createElement('button'); remove.className = 'rm'; remove.type = 'button'; remove.textContent = '×'; remove.setAttribute('aria-label', currentLang === 'en' ? `Remove ${d}` : `Remover ${d}`);
     chip.append(label, remove);
     remove.addEventListener('click', () => {
@@ -421,13 +427,16 @@ function startLiveTicker(ls) {
 
 // ── Status pill (pause) ────────────────────────────────────────
 
-function updateStatusPill(isPaused) {
+function updateStatusPill(isPaused, hasAccess = true) {
   const pill = document.getElementById('pause-btn');
   const text = document.getElementById('status-text');
   pill.setAttribute('aria-pressed', String(isPaused));
   if (isPaused) {
     pill.classList.add('paused');
     text.textContent = tr('paused');
+  } else if (!hasAccess) {
+    pill.classList.add('paused');
+    text.textContent = tr('permissionNeeded');
   } else {
     pill.classList.remove('paused');
     text.textContent = tr('active');
@@ -454,38 +463,28 @@ function exportCSV(data) {
   setTimeout(()=>URL.revokeObjectURL(url), 2000);
 }
 
-// ── Confetti ──────────────────────────────────────────────────
-
-function triggerConfetti() {
-  const wrap   = document.getElementById('confetti-wrap');
-  const colors = ['#8b5cf6','#c084fc','#2dd4bf','#fb7185','#fbbf24'];
-  for (let i = 0; i < 28; i++) {
-    const el = document.createElement('div');
-    el.className = 'conf';
-    el.style.left         = `${Math.random()*100}%`;
-    el.style.background   = colors[Math.floor(Math.random()*colors.length)];
-    el.style.animationDelay = `${Math.random()*0.6}s`;
-    el.style.animationDuration = `${1.2+Math.random()*0.8}s`;
-    wrap.appendChild(el);
-    el.addEventListener('animationend', ()=>el.remove());
-  }
-}
-
 // ── Init principal ────────────────────────────────────────────
 
 async function init() {
-  const s = await loadStats();
-  if (!s || !Object.keys(s).length) return;
-  statsCache = s;
-  currentLang = s.lang || currentLang;
-  const welcome = document.getElementById('onboarding');
-  welcome.hidden = Boolean(s.onboardingDone);
+  const errorPanel = document.getElementById('load-error');
+  try {
+    const s = await loadStats();
+    if (!s || !Object.keys(s).length) throw new Error('No stats returned');
+    errorPanel.hidden = true;
+    statsCache = s;
+    currentLang = s.lang || currentLang;
+    const welcome = document.getElementById('onboarding');
+    welcome.hidden = Boolean(s.onboardingDone);
 
-  renderToday(s);
-  renderWeek(s);
-  renderSettings(s);
-  updateStatusPill(s.isPaused);
-  startLiveTicker(s.liveSession);
+    renderToday(s);
+    renderWeek(s);
+    renderSettings(s);
+    updateStatusPill(s.isPaused, s.trackingPermissionGranted);
+    startLiveTicker(s.liveSession);
+  } catch (error) {
+    console.error('Doomscroll Tracker popup could not load.', error);
+    errorPanel.hidden = false;
+  }
 }
 
 // ── Tab switching ─────────────────────────────────────────────
@@ -515,7 +514,7 @@ function normalizeDomain(input) {
 // Pause/retomar
 document.getElementById('pause-btn').addEventListener('click', () => {
   chrome.runtime.sendMessage({ type:'togglePause' }, res => {
-    if (res) updateStatusPill(res.isPaused);
+    if (res) updateStatusPill(res.isPaused, statsCache.trackingPermissionGranted);
   });
 });
 
@@ -586,6 +585,8 @@ document.getElementById('reset-btn').addEventListener('click', () => {
     chrome.runtime.sendMessage({ type:'resetData' }, () => init());
   }
 });
+
+document.getElementById('load-retry').addEventListener('click', init);
 
 document.getElementById('welcome-lang').addEventListener('change', e => applyLanguage(e.target.value));
 document.getElementById('language-input').addEventListener('change', e => applyLanguage(e.target.value));

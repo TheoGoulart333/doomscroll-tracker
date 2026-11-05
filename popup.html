@@ -9,20 +9,20 @@
 ═══════════════════════════════════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0d0d14;
-  --s1:#17171f;
-  --s2:#1f1f2d;
-  --s3:#27273a;
-  --border:rgba(255,255,255,0.07);
-  --accent:#8b5cf6;
-  --accent2:#c084fc;
-  --teal:#2dd4bf;
-  --teal2:#34d399;
-  --rose:#fb7185;
-  --amber:#fbbf24;
-  --text:#eeeef5;
-  --muted:#6b7280;
-  --muted2:#9ca3af;
+  --bg:#111318;
+  --s1:#191b21;
+  --s2:#22252d;
+  --s3:#2b2f38;
+  --border:rgba(255,255,255,0.075);
+  --accent:#9d87d2;
+  --accent2:#b6a5e2;
+  --teal:#83b6a8;
+  --teal2:#a0c9bb;
+  --rose:#c7818e;
+  --amber:#c8a96e;
+  --text:#eeedf0;
+  --muted:#858792;
+  --muted2:#adaeb5;
   --r:12px;
   --r2:8px;
 }
@@ -48,23 +48,23 @@ body{
 .header{
   display:flex;align-items:center;gap:10px;
   padding:16px 16px 12px;
-  background:linear-gradient(180deg,rgba(139,92,246,0.08) 0%,transparent 100%);
+  background:var(--bg);
   border-bottom:1px solid var(--border);
 }
 .logo{
   width:36px;height:36px;flex-shrink:0;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  border-radius:10px;display:flex;align-items:center;justify-content:center;
-  font-size:17px;box-shadow:0 0 16px rgba(139,92,246,0.4);
+  background:#292532;border:1px solid rgba(182,165,226,.22);
+  border-radius:11px;display:grid;place-items:center;color:var(--accent2);
 }
+.logo svg{width:19px;height:19px}
 .h-info{flex:1}
 .h-info h1{font-size:14px;font-weight:700;letter-spacing:-0.3px}
 .h-info p{font-size:10px;color:var(--muted2);margin-top:1px}
 .status-pill{
   display:flex;align-items:center;gap:5px;
   padding:4px 9px;border-radius:999px;font-size:10px;font-weight:700;
-  background:rgba(45,212,191,0.1);color:var(--teal);
-  border:1px solid rgba(45,212,191,0.25);cursor:pointer;transition:all .2s;
+  background:rgba(131,182,168,.09);color:var(--teal);
+  border:1px solid rgba(131,182,168,.18);cursor:pointer;transition:all .2s;
 }
 .status-pill.paused{
   background:rgba(251,191,36,0.1);color:var(--amber);
@@ -72,39 +72,36 @@ body{
 }
 .status-pill .dot{
   width:6px;height:6px;border-radius:50%;background:currentColor;
-  animation:pulse 1.6s ease-in-out infinite;
+  opacity:.75;
 }
-.status-pill.paused .dot{animation:none;opacity:.6}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.status-pill.paused .dot{opacity:.6}
 
 /* ═══════════════════════════════════════════
    MOOD BANNER
 ═══════════════════════════════════════════ */
 .mood-banner{
-  margin:12px 16px 0;padding:11px 14px;
-  background:var(--s1);border:1px solid var(--border);border-radius:var(--r);
-  display:flex;align-items:center;gap:10px;
-  animation:slideIn .3s ease;
+  margin:9px 16px 0;padding:3px 0 3px 10px;
+  border-left:2px solid var(--accent);display:flex;align-items:center;gap:8px;
 }
-@keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
-.mood-emoji{font-size:22px;flex-shrink:0}
-.mood-text{font-size:12px;line-height:1.4;color:var(--muted2)}
-.mood-text strong{color:var(--text);font-weight:600}
+.mood-mark{width:5px;height:5px;border-radius:50%;background:var(--accent2);flex:0 0 auto}
+.mood-text{font-size:11px;line-height:1.4;color:var(--muted2)}
+.mood-text strong{color:var(--text);font-weight:550}
+.mood-text br{display:none}
 
 /* ═══════════════════════════════════════════
    LIVE SESSION PILL
 ═══════════════════════════════════════════ */
 .live-session{
   margin:8px 16px 0;padding:8px 12px;
-  background:rgba(251,113,133,0.08);
-  border:1px solid rgba(251,113,133,0.2);
+  background:var(--s1);
+  border:1px solid var(--border);
   border-radius:var(--r);display:flex;align-items:center;gap:8px;font-size:11px;
 }
-.live-session .ls-icon{font-size:14px}
+.live-session .ls-icon{width:6px;height:6px;border-radius:50%;background:var(--teal)}
 .live-session .ls-text{flex:1;color:var(--muted2)}
 .live-session .ls-text strong{color:var(--text)}
 .live-session .ls-time{
-  font-size:11px;font-weight:800;color:var(--rose);
+  font-size:11px;font-weight:650;color:var(--teal);
   font-variant-numeric:tabular-nums;letter-spacing:-0.3px;
 }
 .live-session.hidden{display:none}
@@ -137,19 +134,19 @@ body{
   border-radius:var(--r);padding:12px;position:relative;overflow:hidden;
   transition:transform .15s;cursor:default;
 }
-.card:hover{transform:translateY(-1px)}
+.card:hover{border-color:rgba(255,255,255,.12)}
 .card::after{
   content:'';position:absolute;top:0;left:0;right:0;height:2px;
 }
-.card.c-today::after{background:linear-gradient(90deg,var(--accent),var(--accent2))}
-.card.c-week::after {background:linear-gradient(90deg,var(--teal),var(--teal2))}
+.card.c-today::after{background:var(--accent)}
+.card.c-week::after {background:var(--teal)}
 .card-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);margin-bottom:5px}
 .card-value{font-size:26px;font-weight:800;letter-spacing:-1.2px;line-height:1}
 .card-sub{font-size:10px;color:var(--muted);margin-top:3px}
 .card-delta{font-size:10px;font-weight:700;margin-top:4px}
 .card-delta.up{color:var(--rose)}
 .card-delta.down{color:var(--teal)}
-.card-bg-icon{position:absolute;bottom:8px;right:10px;font-size:24px;opacity:.08}
+.card-bg-icon{display:none}
 
 /* ═══════════════════════════════════════════
    STREAK
@@ -159,12 +156,12 @@ body{
   background:var(--s1);border:1px solid var(--border);
   border-radius:var(--r);padding:10px 14px;margin-bottom:10px;
 }
-.streak-flame{font-size:22px}
+.streak-flame{display:none}
 .streak-info{flex:1}
 .streak-num{font-size:18px;font-weight:800;letter-spacing:-0.5px}
 .streak-desc{font-size:10px;color:var(--muted2)}
 .streak-best{font-size:10px;color:var(--muted);text-align:right}
-.streak-best span{color:var(--amber);font-weight:700}
+.streak-best span{color:var(--muted2);font-weight:650}
 
 /* ═══════════════════════════════════════════
    PROGRESS
@@ -175,9 +172,9 @@ body{
 .progress-pct{font-size:11px;font-weight:800}
 .progress-bar-bg{height:6px;background:var(--s3);border-radius:999px;overflow:hidden}
 .progress-bar-fill{height:100%;border-radius:999px;transition:width .6s cubic-bezier(.4,0,.2,1)}
-.pf-low   {background:linear-gradient(90deg,var(--accent),var(--accent2))}
-.pf-mid   {background:linear-gradient(90deg,var(--amber),#f97316)}
-.pf-high  {background:linear-gradient(90deg,var(--rose),#f43f5e)}
+.pf-low   {background:var(--accent)}
+.pf-mid   {background:var(--amber)}
+.pf-high  {background:var(--rose)}
 .progress-hint{font-size:10px;color:var(--muted);margin-top:4px}
 
 /* ═══════════════════════════════════════════
@@ -192,9 +189,9 @@ body{
   background:var(--s3);transition:height .5s cubic-bezier(.4,0,.2,1);
   position:relative;
 }
-.bar.has-data{background:linear-gradient(180deg,var(--accent2),var(--accent))}
-.bar.is-today{background:linear-gradient(180deg,#fda4af,var(--rose))}
-.bar.over-limit{background:linear-gradient(180deg,#fca5a5,#ef4444)}
+.bar.has-data{background:var(--accent)}
+.bar.is-today{background:var(--teal)}
+.bar.over-limit{background:var(--rose)}
 .bar-label{font-size:8.5px;color:var(--muted);letter-spacing:.3px}
 .bar-label.active{color:var(--text);font-weight:700}
 .chart-summary{display:flex;gap:6px;margin-top:8px}
@@ -211,13 +208,12 @@ body{
 .sites-block{margin-bottom:8px}
 .site-row{display:flex;align-items:center;gap:8px;padding:5px 0}
 .site-row + .site-row{border-top:1px solid var(--border)}
-.site-ico{font-size:14px;width:20px;text-align:center;flex-shrink:0}
+.site-ico{display:grid;place-items:center;width:20px;height:20px;border-radius:6px;background:var(--s2);font-size:9px;font-weight:700;color:var(--accent2);flex-shrink:0}
 .site-name{flex:1;font-size:11px;color:var(--text)}
 .site-bar-bg{width:60px;height:4px;background:var(--s3);border-radius:999px;overflow:hidden}
-.site-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:999px}
+.site-bar-fill{height:100%;background:var(--accent);border-radius:999px}
 .site-time{font-size:11px;font-weight:700;color:var(--muted2);min-width:30px;text-align:right}
-.empty-state{text-align:center;padding:16px 0;color:var(--muted);font-size:11px;line-height:1.6}
-.empty-state .e-emoji{font-size:26px;margin-bottom:6px}
+.empty-state{text-align:center;padding:12px 0;color:var(--muted);font-size:11px;line-height:1.5}
 
 /* ═══════════════════════════════════════════
    SESSIONS (panel semana)
@@ -288,10 +284,10 @@ body{
 .btn-sm{padding:6px 10px;font-size:11px;border-radius:6px}
 .btn-ghost{background:var(--s1);color:var(--muted2);border:1px solid var(--border)}
 .btn-ghost:hover{background:var(--s2);color:var(--text)}
-.btn-accent{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 2px 12px rgba(139,92,246,.35)}
+.btn-accent{background:#8875b4;color:#fff;box-shadow:none}
 .btn-accent:hover{filter:brightness(1.1)}
-.btn-danger{background:rgba(251,113,133,.1);color:var(--rose);border:1px solid rgba(251,113,133,.25)}
-.btn-danger:hover{background:rgba(251,113,133,.18)}
+.btn-danger{background:var(--s1);color:var(--muted2);border:1px solid var(--border)}
+.btn-danger:hover{background:var(--s2);color:var(--text)}
 .btn-teal{background:rgba(45,212,191,.1);color:var(--teal);border:1px solid rgba(45,212,191,.25)}
 .btn-teal:hover{background:rgba(45,212,191,.18)}
 
@@ -301,21 +297,14 @@ body{
 /* Save button in settings */
 .save-row{display:flex;justify-content:flex-end;margin-top:4px}
 
-/* confetti */
-.confetti-wrap{position:fixed;top:0;left:0;right:0;pointer-events:none;z-index:999}
-.conf{position:absolute;width:8px;height:8px;border-radius:2px;animation:fall 1.6s ease-in forwards}
-@keyframes fall{
-  0%{opacity:1;transform:translateY(-10px) rotate(0)}
-  100%{opacity:0;transform:translateY(380px) rotate(540deg)}
-}
-
-.onboarding{position:fixed;inset:0;z-index:1000;background:rgba(8,8,14,.96);display:grid;place-items:center;padding:22px}
+.onboarding{position:fixed;inset:0;z-index:1000;background:rgba(17,19,24,.98);display:grid;place-items:center;padding:22px}
 .onboarding[hidden]{display:none}
 .onboarding-card{width:100%;background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:0 18px 60px #0008}
-.onboarding-mark{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-size:23px;margin-bottom:16px}
+.onboarding-mark{width:48px;height:48px;border-radius:14px;background:#292532;border:1px solid rgba(182,165,226,.22);display:grid;place-items:center;color:var(--accent2);margin-bottom:16px}
+.onboarding-mark svg{width:23px;height:23px}
 .onboarding h2{font-size:19px;letter-spacing:-.4px;margin-bottom:7px}
 .onboarding p{font-size:12px;line-height:1.55;color:var(--muted2);margin-bottom:14px}
-.privacy-note{padding:11px;border:1px solid rgba(45,212,191,.18);background:rgba(45,212,191,.06);border-radius:10px;color:var(--muted2);font-size:11px;line-height:1.5;margin:12px 0 18px}
+.privacy-note{padding:11px;border:1px solid var(--border);background:var(--s2);border-radius:10px;color:var(--muted2);font-size:11px;line-height:1.5;margin:12px 0 18px}
 @media(prefers-color-scheme:light){
   :root{color-scheme:light;--bg:#f6f5fb;--s1:#ffffff;--s2:#f1eff7;--s3:#e6e2ef;--border:rgba(29,22,46,.10);--text:#241d32;--muted:#706a7d;--muted2:#554f61}
 }
@@ -324,6 +313,11 @@ body{
 .onboarding .btn{width:100%;justify-content:center;padding:10px}
 .permission-message,.settings-status{font-size:11px;line-height:1.45;color:var(--amber)}
 .permission-message[hidden]{display:none}
+.load-error{position:fixed;inset:0;z-index:1200;background:var(--bg);display:flex;flex-direction:column;justify-content:center;padding:30px;text-align:center}
+.load-error[hidden]{display:none}
+.load-error h2{font-size:16px;font-weight:650;margin-bottom:8px}
+.load-error p{font-size:12px;line-height:1.5;color:var(--muted2);margin:0 auto 18px;max-width:260px}
+.load-error .btn{align-self:center;min-width:130px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 </style>
 </head>
@@ -331,10 +325,10 @@ body{
 
 <div class="onboarding" id="onboarding" hidden role="dialog" aria-modal="true" aria-labelledby="welcome-title">
   <div class="onboarding-card">
-    <div class="onboarding-mark" aria-hidden="true">📵</div>
+  <div class="onboarding-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="3.5" width="14" height="17" rx="3" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M9 18h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
     <h2 id="welcome-title">Seu tempo, com mais intenção.</h2>
     <p id="welcome-copy">Acompanhe seus hábitos sem julgamentos. Você escolhe quais sites entram na conta e define seu próprio ritmo.</p>
-    <div class="privacy-note" id="welcome-privacy">🔒 Seus dados ficam neste navegador. O Doomscroll Tracker não envia histórico para nenhum servidor.</div>
+    <div class="privacy-note" id="welcome-privacy">Seus dados ficam neste navegador. O Doomscroll Tracker não envia histórico para nenhum servidor.</div>
     <p class="privacy-note" id="permission-explainer">O Chrome vai pedir acesso apenas aos sites da sua lista, para reconhecer quando você está neles.</p>
     <p id="permission-message" class="permission-message" role="status" aria-live="polite" hidden></p>
     <label for="welcome-lang" id="welcome-language-label">Idioma</label>
@@ -346,7 +340,7 @@ body{
 
 <!-- HEADER -->
 <div class="header">
-  <div class="logo">📵</div>
+  <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="3.5" width="14" height="17" rx="3" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M9 18h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
   <div class="h-info">
     <h1>Doomscroll Tracker</h1>
     <p id="h-date">Carregando…</p>
@@ -359,13 +353,13 @@ body{
 
 <!-- MOOD BANNER -->
 <div class="mood-banner" id="mood-banner">
-  <div class="mood-emoji" id="mood-emoji">😌</div>
+  <div class="mood-mark" aria-hidden="true"></div>
   <div class="mood-text" id="mood-text"><strong>Tudo certo por aqui!</strong><br>Você ainda não acessou nenhum site monitorado hoje.</div>
 </div>
 
 <!-- LIVE SESSION -->
 <div class="live-session hidden" id="live-session">
-  <div class="ls-icon">📱</div>
+  <div class="ls-icon" aria-hidden="true"></div>
   <div class="ls-text"><span id="live-prefix">Agora em</span> <strong id="ls-domain">—</strong></div>
   <div class="ls-time" id="ls-elapsed">0 min</div>
 </div>
@@ -387,20 +381,18 @@ body{
       <div class="card-value" id="today-val">0</div>
       <div class="card-sub" id="today-unit">minutos</div>
       <div class="card-delta" id="today-delta"></div>
-      <div class="card-bg-icon">🌙</div>
     </div>
     <div class="card c-week">
       <div class="card-label">Esta semana</div>
       <div class="card-value" id="week-val">0</div>
       <div class="card-sub" id="week-unit">minutos</div>
       <div class="card-delta" id="week-delta"></div>
-      <div class="card-bg-icon">📅</div>
     </div>
   </div>
 
   <!-- Streak -->
   <div class="streak-row">
-    <div class="streak-flame" id="streak-flame">🔥</div>
+    <div class="streak-flame" id="streak-flame" aria-hidden="true"></div>
     <div class="streak-info">
       <div class="streak-num" id="streak-num">0</div>
       <div class="streak-desc" id="streak-desc">dias abaixo do limite</div>
@@ -425,7 +417,6 @@ body{
     <div class="section-label">Sites hoje</div>
     <div id="sites-today">
       <div class="empty-state">
-        <div class="e-emoji">👀</div>
         Nada registrado ainda hoje.
       </div>
     </div>
@@ -457,7 +448,7 @@ body{
 
   <!-- Export -->
   <div style="margin-bottom:4px">
-    <button class="btn btn-teal btn-sm" id="export-btn" style="width:100%">📥 Exportar CSV</button>
+    <button class="btn btn-teal btn-sm" id="export-btn" style="width:100%">Exportar CSV</button>
   </div>
 
 </div><!-- /panel-week -->
@@ -525,19 +516,22 @@ body{
   </div>
 
   <div class="save-row">
-    <button class="btn btn-accent btn-sm" id="save-settings-btn">💾 Salvar configurações</button>
+    <button class="btn btn-accent btn-sm" id="save-settings-btn">Salvar configurações</button>
     <span class="settings-status" id="settings-status" role="status" aria-live="polite"></span>
   </div>
 </div><!-- /panel-settings -->
 
 <!-- FOOTER -->
 <div class="footer">
-  <button class="btn btn-ghost" id="options-btn">⚙️ Mais opções</button>
-  <button class="btn btn-danger" id="reset-btn">🗑️ Resetar tudo</button>
+  <button class="btn btn-ghost" id="options-btn">Mais opções</button>
+  <button class="btn btn-danger" id="reset-btn">Apagar histórico</button>
 </div>
 
-<!-- Confetti container -->
-<div class="confetti-wrap" id="confetti-wrap"></div>
+<div class="load-error" id="load-error" role="alert" hidden>
+  <h2 id="load-error-title">Não foi possível carregar seus dados</h2>
+  <p id="load-error-copy">A extensão não respondeu desta vez. Tente novamente ou recarregue a extensão em chrome://extensions.</p>
+  <button class="btn btn-accent" id="load-retry" type="button">Tentar novamente</button>
+</div>
 
 <script src="popup.js"></script>
 </body>

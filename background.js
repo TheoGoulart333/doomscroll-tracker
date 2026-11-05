@@ -156,12 +156,12 @@ async function checkLimitNotification(todayMin) {
 
   const msgs = {
     'pt-BR': {
-      warn:  [`⚠️ Já são ${todayMin} min hoje (limite: ${limit} min). Vai devagar!`, 'Quase no limite'],
-      limit: [`Você atingiu ${limit} min hoje. Que tal uma pausa? 🧘`, '🚨 Doomscroll Tracker'],
+      warn:  [`Você já chegou a ${todayMin} min hoje (meta: ${limit} min).`, 'Perto da sua meta'],
+      limit: [`Você chegou à meta de ${limit} min. Que tal fazer uma pausa?`, 'Doomscroll Tracker'],
     },
     'en': {
-      warn:  [`⚠️ ${todayMin} min today (limit: ${limit} min). Slow down!`, 'Almost at your limit'],
-      limit: [`You've hit ${limit} min today. How about a break? 🧘`, '🚨 Doomscroll Tracker'],
+      warn:  [`You have reached ${todayMin} min today (goal: ${limit} min).`, 'Near your daily goal'],
+      limit: [`You reached your ${limit} min goal. Consider taking a break.`, 'Doomscroll Tracker'],
     },
   };
   const m = msgs[lang] || msgs['en'];
@@ -194,7 +194,7 @@ async function sendWeeklyReport() {
   const m    = mins % 60;
   const timeStr = h > 0 ? `${h}h ${m}min` : `${m}min`;
 
-  const title   = lang === 'pt-BR' ? '📊 Resumo semanal — Doomscroll Tracker' : '📊 Weekly Report — Doomscroll Tracker';
+  const title   = lang === 'pt-BR' ? 'Resumo semanal — Doomscroll Tracker' : 'Weekly report — Doomscroll Tracker';
   const message = lang === 'pt-BR'
     ? `Na semana passada você passou ${timeStr} em sites monitorados. Veja seus detalhes!`
     : `Last week you spent ${timeStr} on tracked sites. Check your stats!`;
@@ -290,11 +290,15 @@ chrome.idle.onStateChanged.addListener(async state => {
 
 async function restoreTrackingSession() {
   if (activeTabId !== null) return;
-  const { trackingSession } = await chrome.storage.session.get('trackingSession');
-  if (!trackingSession) return;
-  activeTabId = trackingSession.tabId;
-  activeDomain = trackingSession.domain;
-  startTimestamp = trackingSession.startTimestamp;
+  try {
+    const { trackingSession } = await chrome.storage.session.get('trackingSession');
+    if (!trackingSession) return;
+    activeTabId = trackingSession.tabId;
+    activeDomain = trackingSession.domain;
+    startTimestamp = trackingSession.startTimestamp;
+  } catch (error) {
+    console.warn('Could not restore the active tracking session.', error);
+  }
 }
 
 async function resumeActiveTab() {
@@ -329,7 +333,9 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   rebuildContextMenu(existing.lang || defaults.lang);
   if (reason === 'update' && existing.onboardingDone) {
     const migrationOrigins = originsForDomains(existing.trackedDomains || DEFAULT_DOMAINS);
-    const accessGranted = await chrome.permissions.contains({ origins: migrationOrigins });
+    let accessGranted = false;
+    try { accessGranted = await chrome.permissions.contains({ origins: migrationOrigins }); }
+    catch (error) { console.warn('Could not verify optional site access.', error); }
     if (!accessGranted) await chrome.storage.local.set({ onboardingDone: false });
   }
   if (reason === 'install') await chrome.action.setBadgeText({ text: '' });
@@ -354,7 +360,9 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
 
       // Ensure defaults
       const trackedDomains = data.trackedDomains || DEFAULT_DOMAINS;
-      const trackingPermissionGranted = await chrome.permissions.contains({ origins: originsForDomains(trackedDomains) });
+      let trackingPermissionGranted = false;
+      try { trackingPermissionGranted = await chrome.permissions.contains({ origins: originsForDomains(trackedDomains) }); }
+      catch (error) { console.warn('Could not verify optional site access.', error); }
       const daily          = data.daily || {};
 
       let liveSession = null;
@@ -386,7 +394,10 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
         onboardingDone: data.onboardingDone || false,
         liveSession,
       });
-    })();
+    })().catch(error => {
+      console.error('Could not load Doomscroll Tracker stats.', error);
+      sendResponse({ error: true });
+    });
     return true;
   }
 

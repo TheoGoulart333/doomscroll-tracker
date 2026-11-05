@@ -2,7 +2,7 @@ const COPY = {
   'pt-BR': {
     subtitle:'Preferências de monitoramento', title:'Escolha os sites que quer acompanhar',
     description:'Um domínio por linha. Só esses sites entram nas suas estatísticas.',
-    privacy:'🔒 Sua lista e suas estatísticas ficam salvas apenas neste navegador.',
+    privacy:'Sua lista e suas estatísticas ficam salvas apenas neste navegador.',
     label:'Domínios monitorados', help:'Exemplo: reddit.com ou www.youtube.com. Prefixos http e https também são aceitos.',
     save:'Salvar alterações', saved:'Preferências salvas.', invalid:'Revise os domínios: use um domínio válido por linha.', permissionDenied:'O Chrome não autorizou o acesso. As alterações não foram salvas.',
     foot:'Você pode mudar a lista a qualquer momento no popup ou nesta página.'
@@ -10,7 +10,7 @@ const COPY = {
   en: {
     subtitle:'Tracking preferences', title:'Choose the sites you want to track',
     description:'Add one domain per line. Only these sites are included in your stats.',
-    privacy:'🔒 Your list and statistics are saved only in this browser.',
+    privacy:'Your list and statistics are saved only in this browser.',
     label:'Tracked domains', help:'For example: reddit.com or www.youtube.com. http and https prefixes are accepted.',
     save:'Save changes', saved:'Preferences saved.', invalid:'Please check the domains. Enter one valid domain per line.', permissionDenied:'Chrome did not grant site access. Your changes were not saved.',
     foot:'You can update this list any time from the popup or this page.'

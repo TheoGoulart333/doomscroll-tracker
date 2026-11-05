@@ -1,59 +1,58 @@
-# 🚫 Doomscroll Tracker
+# Doomscroll Tracker
 
 <div align="center">
 
 <img src="icons/icon-128.png" alt="Doomscroll Tracker" width="96" />
 
-### Uma forma gentil e privada de perceber seus hábitos de navegação.
+### Veja para onde vai o tempo que você passa nos feeds.
 
-![Version](https://img.shields.io/badge/version-2.3.0-8b5cf6?style=flat-square)
+**Versão 2.4.0**
 ![Manifest](https://img.shields.io/badge/Manifest-V3-2dd4bf?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-fb7185?style=flat-square)
 ![Privacy](https://img.shields.io/badge/privacy-100%25_local-22d3a5?style=flat-square)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-fbbf24?style=flat-square)
 
-**[Instalar](#-instalação) · [Funcionalidades](#-funcionalidades) · [Como funciona](#-como-funciona) · [Contribuir](#-contribuindo)**
+**[Instalar](#instalação) · [Funcionalidades](#funcionalidades) · [Como funciona](#como-funciona) · [Contribuir](#contribuindo)**
 
 </div>
 
 ---
 
-## ✨ Por que essa extensão?
+## Por que essa extensão?
 
 Você já abriu o Twitter "só por um segundo" e percebeu que passaram 45 minutos? Isso é **doomscrolling** — o consumo inconsciente e infinito de conteúdo em feeds de redes sociais.
 
-**Doomscroll Tracker** monitora em tempo real quanto tempo você passa nesses sites, mostra seu progresso diário e semanal, e te dá nudges gentis para fazer uma pausa. Sem julgamentos, competição ou pressão — só uma visão mais clara do tempo que você escolheu acompanhar.
+**Doomscroll Tracker** mostra quanto tempo você passa nesses sites, acompanha seu progresso diário e semanal e oferece lembretes gentis para uma pausa. Sem julgamentos, competição ou pressão — só uma visão mais clara do tempo que você escolheu acompanhar.
 
 ---
 
-## 🚀 Funcionalidades
+## Funcionalidades
 
-### 📊 Dashboard com 3 abas
+### Um painel claro em três abas
 
 **Aba Hoje**
-- ⏱ **Timer ao vivo** — vê em tempo real quantos minutos você está no site atual
-- 📈 **Cards de hoje e semana** com comparativo percentual vs. ontem e semana passada
-- 🔥 **Sequência de dias** dentro da sua meta com recorde pessoal
-- 🌿 **Mensagens acolhedoras**, sem alarmismo ou culpa, com referência ajustável por você
-- 🌍 **Português e inglês**, com idioma sugerido pelo navegador e opção de troca
-- 🏆 Emojis adaptativos: `🌱` → `🔥` → `🏆`
+- **Timer ao vivo** — vê em tempo real quantos minutos você está no site atual
+- **Resumo de hoje e da semana** com comparativo vs. ontem e semana passada
+- **Sequência de dias** dentro da sua meta e recorde pessoal
+- **Mensagens acolhedoras**, sem alarmismo ou culpa, com referência ajustável por você
+- **Português e inglês**, com idioma sugerido pelo navegador e opção de troca
 
 **Aba Semana**
-- 📊 **Gráfico de barras** dos últimos 7 dias com destaque no dia atual
-- 📉 **Pills de resumo**: média, melhor e pior dia
-- 🌐 **Top sites** rankeados por tempo (semana), com barra proporcional
-- 📋 **Sessões recentes** com horário de início e duração
-- 📥 **Export CSV** com totais por dia, por site e até 50 sessões recentes
+- **Gráfico dos últimos 7 dias** com destaque no dia atual
+- **Resumo** de média, melhor e pior dia
+- **Sites mais acessados** na semana
+- **Sessões recentes** com horário de início e duração
+- **Exportação CSV** com totais por dia, por site e até 50 sessões recentes
 
 **Aba Configurações**
-- 🎚 **Limite diário customizável** via slider (10–300 min)
-- 🔔 **Notificações do sistema** a 80% e 100% do limite (ativáveis/desativáveis)
-- ➕ **Adicionar e remover domínios** com validação e menu de contexto no clique direito
-- 📬 **Resumo semanal opcional**, desativado por padrão e separado dos alertas de limite
-- 🌗 **Tema claro ou escuro** conforme a preferência do sistema
-- 👋 **Boas-vindas na primeira abertura**, com explicação de privacidade
+- **Limite diário ajustável** (10–300 min)
+- **Lembretes opcionais** ao chegar a 80% e 100% do limite
+- **Lista de sites personalizável** com validação e menu de contexto
+- **Resumo semanal opcional**, desativado por padrão
+- **Tema claro ou escuro** conforme a preferência do sistema
+- **Configuração inicial** com explicação de privacidade
 
-### 🔒 Privacidade total
+### Privacidade
 - **Zero dados enviados** a servidores externos
 - Histórico e preferências ficam em `chrome.storage.local`; a sessão ativa usa `chrome.storage.session` e não sai do navegador
 - A extensão consulta a aba ativa para verificar se o domínio está na lista escolhida; não coleta páginas fora dela
@@ -61,7 +60,7 @@ Você já abriu o Twitter "só por um segundo" e percebeu que passaram 45 minuto
 
 ---
 
-## 📦 Instalação
+## Instalação
 
 > Instalação via modo desenvolvedor — não requer publicação na Chrome Web Store. Requer Chrome 102 ou posterior.
 
@@ -87,7 +86,7 @@ Atualizações preservam configurações e histórico local. O tempo da aba atua
 
 ---
 
-## 🛠 Como funciona
+## Como funciona
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -145,7 +144,7 @@ Atualizações preservam configurações e histórico local. O tempo da aba atua
 
 ---
 
-## 🌐 Sites monitorados (padrão)
+## Sites monitorados (padrão)
 
 | Site | Domínio |
 |------|---------|
@@ -164,7 +163,7 @@ Atualizações preservam configurações e histórico local. O tempo da aba atua
 
 ---
 
-## 🔐 Privacidade
+## Privacidade
 
 | Item | Detalhe |
 |------|---------|
@@ -184,7 +183,7 @@ Atualizações preservam configurações e histórico local. O tempo da aba atua
 
 ---
 
-## 🗂 Estrutura do projeto
+## Estrutura do projeto
 
 ```
 doomscroll-tracker/
@@ -206,7 +205,7 @@ doomscroll-tracker/
 
 ---
 
-## 🤝 Contribuindo
+## Contribuindo
 
 Contribuições são muito bem-vindas!
 
@@ -224,7 +223,7 @@ Contribuições são muito bem-vindas!
 
 ---
 
-## 📄 Licença
+## Licença
 
 MIT © 2026 Theo Goulart — Veja [LICENSE](LICENSE) para detalhes.
 
@@ -232,8 +231,8 @@ MIT © 2026 Theo Goulart — Veja [LICENSE](LICENSE) para detalhes.
 
 <div align="center">
 
-**Feito com 💜 para ajudar pessoas a retomarem o controle da sua atenção.**
+**Criado para ajudar pessoas a usarem seu tempo online com mais intenção.**
 
-Se esse projeto te ajudou, deixa uma ⭐ — significa muito!
+Se este projeto foi útil, considere deixar uma estrela ou compartilhar com alguém.
 
 </div>
