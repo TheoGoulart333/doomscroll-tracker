@@ -4,15 +4,15 @@
 
 <img src="icons/icon-128.png" alt="Doomscroll Tracker" width="96" />
 
-### Monitore o tempo que você passa em sites de entretenimento — e retome o controle da sua atenção.
+### Uma forma gentil e privada de perceber seus hábitos de navegação.
 
-![Version](https://img.shields.io/badge/version-2.0.0-8b5cf6?style=flat-square)
+![Version](https://img.shields.io/badge/version-2.3.0-8b5cf6?style=flat-square)
 ![Manifest](https://img.shields.io/badge/Manifest-V3-2dd4bf?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-fb7185?style=flat-square)
 ![Privacy](https://img.shields.io/badge/privacy-100%25_local-22d3a5?style=flat-square)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-fbbf24?style=flat-square)
 
-**[Instalar](#-instalacao) · [Funcionalidades](#-funcionalidades) · [Como funciona](#-como-funciona) · [Contribuir](#-contribuindo)**
+**[Instalar](#-instalação) · [Funcionalidades](#-funcionalidades) · [Como funciona](#-como-funciona) · [Contribuir](#-contribuindo)**
 
 </div>
 
@@ -22,7 +22,7 @@
 
 Você já abriu o Twitter "só por um segundo" e percebeu que passaram 45 minutos? Isso é **doomscrolling** — o consumo inconsciente e infinito de conteúdo em feeds de redes sociais.
 
-**Doomscroll Tracker** monitora em tempo real quanto tempo você passa nesses sites, mostra seu progresso diário e semanal, e te dá nudges gentis para fazer uma pausa. Sem julgamento — só clareza.
+**Doomscroll Tracker** monitora em tempo real quanto tempo você passa nesses sites, mostra seu progresso diário e semanal, e te dá nudges gentis para fazer uma pausa. Sem julgamentos, competição ou pressão — só uma visão mais clara do tempo que você escolheu acompanhar.
 
 ---
 
@@ -33,9 +33,9 @@ Você já abriu o Twitter "só por um segundo" e percebeu que passaram 45 minuto
 **Aba Hoje**
 - ⏱ **Timer ao vivo** — vê em tempo real quantos minutos você está no site atual
 - 📈 **Cards de hoje e semana** com comparativo percentual vs. ontem e semana passada
-- 🔥 **Streak de dias** abaixo do limite com recorde pessoal
-- 💬 **Mensagens dinâmicas** com personalidade — de `😌 Tudo certo!` a `🚨 Limite atingido!`
-- 🎉 **Confetti** quando você mantém um streak de 3+ dias
+- 🔥 **Sequência de dias** dentro da sua meta com recorde pessoal
+- 🌿 **Mensagens acolhedoras**, sem alarmismo ou culpa, com referência ajustável por você
+- 🌍 **Português e inglês**, com idioma sugerido pelo navegador e opção de troca
 - 🏆 Emojis adaptativos: `🌱` → `🔥` → `🏆`
 
 **Aba Semana**
@@ -43,28 +43,34 @@ Você já abriu o Twitter "só por um segundo" e percebeu que passaram 45 minuto
 - 📉 **Pills de resumo**: média, melhor e pior dia
 - 🌐 **Top sites** rankeados por tempo (semana), com barra proporcional
 - 📋 **Sessões recentes** com horário de início e duração
-- 📥 **Export CSV** com histórico completo por dia e por sessão
+- 📥 **Export CSV** com totais por dia, por site e até 50 sessões recentes
 
 **Aba Configurações**
 - 🎚 **Limite diário customizável** via slider (10–300 min)
 - 🔔 **Notificações do sistema** a 80% e 100% do limite (ativáveis/desativáveis)
-- ➕ **Adicionar e remover domínios** diretamente no popup (chips clicáveis)
+- ➕ **Adicionar e remover domínios** com validação e menu de contexto no clique direito
+- 📬 **Resumo semanal opcional**, desativado por padrão e separado dos alertas de limite
+- 🌗 **Tema claro ou escuro** conforme a preferência do sistema
+- 👋 **Boas-vindas na primeira abertura**, com explicação de privacidade
 
 ### 🔒 Privacidade total
 - **Zero dados enviados** a servidores externos
-- Tudo armazenado em `chrome.storage.local` — só você acessa
+- Histórico e preferências ficam em `chrome.storage.local`; a sessão ativa usa `chrome.storage.session` e não sai do navegador
+- A extensão consulta a aba ativa para verificar se o domínio está na lista escolhida; não coleta páginas fora dela
 - Código aberto e auditável
 
 ---
 
-## 📦 Instalacao
+## 📦 Instalação
 
-> Instalação via modo desenvolvedor — não requer publicação na Chrome Web Store.
+> Instalação via modo desenvolvedor — não requer publicação na Chrome Web Store. Requer Chrome 102 ou posterior.
 
 **1. Clone o repositório:**
 ```bash
 git clone https://github.com/TheoGoulart333/doomscroll-tracker.git
 ```
+
+Ou baixe o ZIP pelo botão **Code → Download ZIP** na página do repositório e extraia a pasta.
 
 **2. Abra o Chrome e acesse:**
 ```
@@ -75,7 +81,9 @@ chrome://extensions/
 
 **4. Clique em "Carregar sem compactação"** e selecione a pasta `doomscroll-tracker`.
 
-**5. Pronto!** O ícone aparecerá na barra de ferramentas. Clique para começar. 🎉
+**5. Pronto!** O ícone aparecerá na barra de ferramentas. Na primeira abertura, escolha o idioma e autorize o acesso aos sites que quer acompanhar. Você também pode continuar sem monitoramento e conceder acesso depois nas configurações. Seus dados permanecem no navegador.
+
+Atualizações preservam configurações e histórico local. O tempo da aba atual também é mantido durante reinícios do processo de fundo do Chrome.
 
 ---
 
@@ -167,10 +175,12 @@ chrome://extensions/
 
 **Permissões solicitadas:**
 - `storage` — salvar dados localmente
-- `tabs` / `activeTab` — detectar qual site está ativo
+- `activeTab` — acesso temporário à página atual quando você usa a ação da extensão
 - `idle` — pausar contagem quando o usuário não está usando o computador
 - `notifications` — avisos de limite (desativável nas configurações)
-- `alarms` — reset da flag de notificação à meia-noite
+- `alarms` — atualizar o selo e agendar resumos semanais opt-in
+- `contextMenus` — adicionar o site atual pelo menu do botão direito
+- **Acesso opcional aos sites escolhidos** — solicitado pelo Chrome na configuração inicial ou quando você adiciona domínios. A extensão usa esse acesso para reconhecer as páginas monitoradas; você pode rever ou remover o acesso nas configurações do Chrome.
 
 ---
 
@@ -206,7 +216,7 @@ Contribuições são muito bem-vindas!
 4. Abra um **Pull Request**
 
 **Ideias abertas:**
-- [ ] Light mode
+- [ ] Mais opções de tema
 - [ ] Suporte a Firefox
 - [ ] Meta semanal configurável
 - [ ] Companion app mobile (Flutter)

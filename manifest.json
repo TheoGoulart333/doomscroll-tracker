@@ -1,17 +1,18 @@
 {
   "manifest_version": 3,
   "name": "Doomscroll Tracker",
-  "description": "Monitora quanto tempo você passa em sites de entretenimento. Privacidade total: dados locais, sem servidores externos.",
-  "version": "2.0.0",
+  "description": "A gentle, private way to notice your scrolling habits. Your data stays on your device.",
+  "version": "2.3.0",
+  "minimum_chrome_version": "102",
   "permissions": [
     "storage",
-    "tabs",
     "activeTab",
-    "webNavigation",
     "idle",
     "notifications",
-    "alarms"
+    "alarms",
+    "contextMenus"
   ],
+  "optional_host_permissions": ["https://*/*", "http://*/*"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
@@ -19,7 +20,8 @@
       "32": "icons/icon-32.png",
       "48": "icons/icon-48.png",
       "128": "icons/icon-128.png"
-    }
+    },
+    "default_badge_text": ""
   },
   "background": {
     "service_worker": "background.js"

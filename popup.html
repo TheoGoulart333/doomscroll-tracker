@@ -308,9 +308,41 @@ body{
   0%{opacity:1;transform:translateY(-10px) rotate(0)}
   100%{opacity:0;transform:translateY(380px) rotate(540deg)}
 }
+
+.onboarding{position:fixed;inset:0;z-index:1000;background:rgba(8,8,14,.96);display:grid;place-items:center;padding:22px}
+.onboarding[hidden]{display:none}
+.onboarding-card{width:100%;background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:0 18px 60px #0008}
+.onboarding-mark{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-size:23px;margin-bottom:16px}
+.onboarding h2{font-size:19px;letter-spacing:-.4px;margin-bottom:7px}
+.onboarding p{font-size:12px;line-height:1.55;color:var(--muted2);margin-bottom:14px}
+.privacy-note{padding:11px;border:1px solid rgba(45,212,191,.18);background:rgba(45,212,191,.06);border-radius:10px;color:var(--muted2);font-size:11px;line-height:1.5;margin:12px 0 18px}
+@media(prefers-color-scheme:light){
+  :root{color-scheme:light;--bg:#f6f5fb;--s1:#ffffff;--s2:#f1eff7;--s3:#e6e2ef;--border:rgba(29,22,46,.10);--text:#241d32;--muted:#706a7d;--muted2:#554f61}
+}
+:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
+.language-select{background:var(--s2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:7px;font:inherit}
+.onboarding .btn{width:100%;justify-content:center;padding:10px}
+.permission-message,.settings-status{font-size:11px;line-height:1.45;color:var(--amber)}
+.permission-message[hidden]{display:none}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
+
+<div class="onboarding" id="onboarding" hidden role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+  <div class="onboarding-card">
+    <div class="onboarding-mark" aria-hidden="true">📵</div>
+    <h2 id="welcome-title">Seu tempo, com mais intenção.</h2>
+    <p id="welcome-copy">Acompanhe seus hábitos sem julgamentos. Você escolhe quais sites entram na conta e define seu próprio ritmo.</p>
+    <div class="privacy-note" id="welcome-privacy">🔒 Seus dados ficam neste navegador. O Doomscroll Tracker não envia histórico para nenhum servidor.</div>
+    <p class="privacy-note" id="permission-explainer">O Chrome vai pedir acesso apenas aos sites da sua lista, para reconhecer quando você está neles.</p>
+    <p id="permission-message" class="permission-message" role="status" aria-live="polite" hidden></p>
+    <label for="welcome-lang" id="welcome-language-label">Idioma</label>
+    <select class="language-select" id="welcome-lang"><option value="pt-BR">Português</option><option value="en">English</option></select>
+    <button class="btn btn-accent" id="welcome-start" style="margin-top:16px">Começar</button>
+    <button class="btn btn-ghost" id="welcome-skip" style="width:100%;justify-content:center;margin-top:8px">Continuar sem monitorar</button>
+  </div>
+</div>
 
 <!-- HEADER -->
 <div class="header">
@@ -319,10 +351,10 @@ body{
     <h1>Doomscroll Tracker</h1>
     <p id="h-date">Carregando…</p>
   </div>
-  <div class="status-pill" id="pause-btn" title="Pausar/Retomar rastreamento">
+  <button class="status-pill" id="pause-btn" type="button" aria-pressed="false" title="Pausar/Retomar rastreamento">
     <span class="dot"></span>
-    <span id="status-text">Ativo</span>
-  </div>
+    <span id="status-text">Contando</span>
+  </button>
 </div>
 
 <!-- MOOD BANNER -->
@@ -334,19 +366,19 @@ body{
 <!-- LIVE SESSION -->
 <div class="live-session hidden" id="live-session">
   <div class="ls-icon">📱</div>
-  <div class="ls-text">Agora em <strong id="ls-domain">—</strong></div>
+  <div class="ls-text"><span id="live-prefix">Agora em</span> <strong id="ls-domain">—</strong></div>
   <div class="ls-time" id="ls-elapsed">0 min</div>
 </div>
 
 <!-- TABS -->
-<div class="tabs">
-  <button class="tab active" data-tab="today">Hoje</button>
-  <button class="tab" data-tab="week">Semana</button>
-  <button class="tab" data-tab="settings">Configurações</button>
+<div class="tabs" role="tablist" aria-label="Navegação do Doomscroll Tracker">
+  <button class="tab active" id="tab-today" role="tab" aria-selected="true" aria-controls="panel-today" data-tab="today">Hoje</button>
+  <button class="tab" id="tab-week" role="tab" aria-selected="false" aria-controls="panel-week" data-tab="week">Semana</button>
+  <button class="tab" id="tab-settings" role="tab" aria-selected="false" aria-controls="panel-settings" data-tab="settings">Configurações</button>
 </div>
 
 <!-- ══════════ PANEL: HOJE ══════════ -->
-<div class="panel active" id="panel-today">
+<div class="panel active" id="panel-today" role="tabpanel" aria-labelledby="tab-today">
 
   <!-- Hero -->
   <div class="hero">
@@ -373,13 +405,13 @@ body{
       <div class="streak-num" id="streak-num">0</div>
       <div class="streak-desc" id="streak-desc">dias abaixo do limite</div>
     </div>
-    <div class="streak-best">Recorde<br><span id="best-streak">0</span> dias</div>
+    <div class="streak-best"><span id="best-label">Recorde</span><br><span id="best-streak">0</span> <span id="best-unit">dias</span></div>
   </div>
 
   <!-- Limit progress -->
   <div class="progress-block">
     <div class="progress-row">
-      <span class="progress-label">Limite diário</span>
+      <span class="progress-label" id="progress-label">Limite diário</span>
       <span class="progress-pct" id="limit-pct" style="color:var(--accent2)">0%</span>
     </div>
     <div class="progress-bar-bg">
@@ -402,7 +434,7 @@ body{
 </div><!-- /panel-today -->
 
 <!-- ══════════ PANEL: SEMANA ══════════ -->
-<div class="panel" id="panel-week">
+<div class="panel" id="panel-week" role="tabpanel" aria-labelledby="tab-week">
 
   <!-- Weekly chart -->
   <div class="chart-block">
@@ -431,7 +463,7 @@ body{
 </div><!-- /panel-week -->
 
 <!-- ══════════ PANEL: CONFIGURAÇÕES ══════════ -->
-<div class="panel" id="panel-settings">
+<div class="panel" id="panel-settings" role="tabpanel" aria-labelledby="tab-settings">
 
   <!-- Limit -->
   <div class="settings-block">
@@ -463,6 +495,20 @@ body{
     </div>
   </div>
 
+  <div class="settings-block">
+    <div class="set-label" id="weekly-label">Resumo semanal</div>
+    <div class="set-row">
+      <div>
+        <div class="set-row-label" id="weekly-toggle-label">Lembrete semanal</div>
+        <div class="set-row-sub" id="weekly-toggle-sub">Receba um resumo uma vez por semana</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="weekly-toggle">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+  </div>
+
   <!-- Domains -->
   <div class="settings-block">
     <div class="set-label">Sites monitorados</div>
@@ -473,8 +519,14 @@ body{
     </div>
   </div>
 
+  <div class="settings-block">
+    <div class="set-label" id="language-label">Idioma / Language</div>
+    <select class="language-select" id="language-input" aria-labelledby="language-label"><option value="pt-BR">Português</option><option value="en">English</option></select>
+  </div>
+
   <div class="save-row">
     <button class="btn btn-accent btn-sm" id="save-settings-btn">💾 Salvar configurações</button>
+    <span class="settings-status" id="settings-status" role="status" aria-live="polite"></span>
   </div>
 </div><!-- /panel-settings -->
 
