@@ -48,8 +48,13 @@ function registerChromeListener(event, handler, eventName) {
     console.error(`Doomscroll Tracker: Chrome event unavailable: ${eventName}`);
     return false;
   }
-  event.addListener(handler);
-  return true;
+  try {
+    event.addListener(handler);
+    return true;
+  } catch (error) {
+    console.error(`Doomscroll Tracker: Could not register Chrome event: ${eventName}`, error);
+    return false;
+  }
 }
 function preferredLanguage(locale = chrome.i18n.getUILanguage()) {
   const language = String(locale || '').toLowerCase();
@@ -70,7 +75,6 @@ async function updateBadge(todayMin) {
 }
 
 // Badge live update every minute while tracking
-chrome.alarms.create('badge_tick', { periodInMinutes: 1 });
 registerChromeListener(chrome.alarms?.onAlarm, async alarm => {
   if (alarm.name === 'badge_tick') {
     await restoreTrackingSession();
@@ -224,10 +228,6 @@ async function sendWeeklyReport() {
   });
 }
 
-// Weekly report every Sunday at 9am (approximate via periodic alarm)
-chrome.alarms.get('weekly_report', alarm => {
-  if (!alarm) chrome.alarms.create('weekly_report', { when: getNextWeeklyReport(), periodInMinutes: 7 * 24 * 60 });
-});
 function getNextWeeklyReport() {
   const next = new Date();
   const daysUntilSunday = (7 - next.getDay()) % 7;
@@ -294,10 +294,23 @@ registerChromeListener(chrome.runtime?.onStartup, async () => {
   await resumeActiveTab();
 }, 'chrome.runtime.onStartup');
 
-// Midnight reset
-chrome.alarms.create('midnight_reset', { when: getNextMidnight(), periodInMinutes: 1440 });
 function getNextMidnight() {
   const d = new Date(); d.setHours(24, 0, 0, 0); return d.getTime();
+}
+
+async function ensureAlarm(name, alarmInfo) {
+  const existing = await chrome.alarms.get(name);
+  if (!existing) await chrome.alarms.create(name, alarmInfo);
+}
+
+async function initializeAlarms() {
+  try {
+    await chrome.alarms.create('badge_tick', { periodInMinutes: 1 });
+    await chrome.alarms.create('midnight_reset', { when: getNextMidnight(), periodInMinutes: 1440 });
+    await ensureAlarm('weekly_report', { when: getNextWeeklyReport(), periodInMinutes: 7 * 24 * 60 });
+  } catch (error) {
+    console.error('Doomscroll Tracker: alarm setup failed; the service worker will stay available.', error);
+  }
 }
 
 registerChromeListener(chrome.runtime?.onInstalled, async ({ reason }) => {
@@ -444,3 +457,6 @@ registerChromeListener(chrome.runtime?.onMessage, (req, sender, sendResponse) =>
     return true;
   }
 }, 'chrome.runtime.onMessage');
+
+// Start asynchronous setup only after all message and event listeners exist.
+void initializeAlarms();

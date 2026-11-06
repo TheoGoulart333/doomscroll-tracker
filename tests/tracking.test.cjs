@@ -5,13 +5,14 @@ const vm = require('node:vm');
 const path = require('node:path');
 const { normalizeDomain, extractDomain, matchesTrackedDomain } = require('../domain-utils.js');
 
-function createTracker({ trackedDomains = ['youtube.com'], local = {}, session = {}, now = Date.UTC(2026, 10, 5, 12) } = {}) {
+function createTracker({ trackedDomains = ['youtube.com'], local = {}, session = {}, now = Date.UTC(2026, 10, 5, 12), alarmFailure = false, silent = false } = {}) {
   let clock = now;
   class FakeDate extends Date {
     constructor(...args) { super(...(args.length ? args : [clock])); }
     static now() { return clock; }
   }
   const listeners = {};
+  const alarms = new Map();
   const event = name => ({ addListener: handler => { (listeners[name] ||= []).push(handler); } });
   const localData = { trackedDomains, ...local };
   const sessionData = { ...session };
@@ -27,7 +28,11 @@ function createTracker({ trackedDomains = ['youtube.com'], local = {}, session =
     remove: async keys => { for (const key of Array.isArray(keys) ? keys : [keys]) delete data[key]; },
   });
   const chrome = {
-    alarms: { create() {}, get(_name, callback) { callback(undefined); }, onAlarm: event('alarms.onAlarm') },
+    alarms: {
+      create(name, info) { if (alarmFailure) throw new Error('simulated alarm API failure'); alarms.set(name, { name, ...info }); },
+      get: async name => alarms.get(name),
+      onAlarm: event('alarms.onAlarm'),
+    },
     action: { async setBadgeText() {}, async setBadgeBackgroundColor() {} },
     storage: { local: store(localData), session: store(sessionData) },
     permissions: { async contains() { return true; } },
@@ -39,17 +44,18 @@ function createTracker({ trackedDomains = ['youtube.com'], local = {}, session =
     runtime: { lastError: null, onStartup: event('runtime.onStartup'), onInstalled: event('runtime.onInstalled'), onMessage: event('runtime.onMessage') },
   };
   const context = {
-    chrome, Date: FakeDate, URL, console, setTimeout, clearTimeout,
+    chrome, Date: FakeDate, URL, console: silent ? { error() {}, warn() {} } : console, setTimeout, clearTimeout,
     importScripts() {},
     normalizeDomain, extractDomain, matchesTrackedDomain,
   };
   const src = fs.readFileSync(path.join(__dirname, '..', 'background.js'), 'utf8');
-  vm.runInNewContext(`${src}\nglobalThis.__tracker = { startTracking, stopTracking, restoreTrackingSession };`, context, { filename: 'background.js' });
+  vm.runInNewContext(`${src}\nglobalThis.__tracker = { startTracking, stopTracking, restoreTrackingSession, initializeAlarms };`, context, { filename: 'background.js' });
   return {
     tracker: context.__tracker,
     data: localData,
     sessionData,
     listeners,
+    alarms,
     advance(seconds) { clock += seconds * 1000; },
   };
 }
@@ -59,6 +65,22 @@ test('background starts without contextMenus and registers its required listener
   assert.ok(app.listeners['runtime.onMessage']?.length);
   assert.ok(app.listeners['tabs.onActivated']?.length);
   assert.equal('contextMenus' in app.listeners, false);
+});
+
+test('alarm initialization creates the badge, midnight, and weekly schedules', async () => {
+  const app = createTracker();
+  await app.tracker.initializeAlarms();
+  assert.deepEqual([...app.alarms.keys()].sort(), ['badge_tick', 'midnight_reset', 'weekly_report']);
+});
+
+test('alarm setup failure is contained and does not block the stats service worker', async () => {
+  const app = createTracker({ alarmFailure: true, silent: true });
+  await app.tracker.initializeAlarms();
+  assert.ok(app.listeners['runtime.onMessage']?.length);
+  const response = await new Promise(resolve => {
+    app.listeners['runtime.onMessage'][0]({ type: 'getStats' }, {}, resolve);
+  });
+  assert.equal(response.error, undefined);
 });
 
 test('legacy streak values are ignored so missing history cannot appear as completed days', async () => {
