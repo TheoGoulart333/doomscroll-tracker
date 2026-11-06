@@ -33,7 +33,7 @@ const COPY = {
     noSites:'Nenhum site monitorado por enquanto.',
     startTitle:'Perceba para onde vai seu tempo.', startCopy:'Acompanhe quanto tempo você passa nos sites que escolher. Seus dados ficam no seu navegador. Sem julgamentos.',
     privacy:'Seus dados ficam neste navegador. O Doomscroll Tracker não envia seu histórico para nenhum servidor.',
-    welcomeSites:'Sites que você quer acompanhar', welcomeSitesHelp:'Adicione ou remova sites. Só os escolhidos entram na contagem.', welcomeDomainPlaceholder:'ex.: reddit.com', welcomeAdd:'Adicionar', domainInvalid:'Digite um domínio válido, como reddit.com.', domainDuplicate:'Esse site já está na lista.', selectedSites:'{count} sites selecionados', selectedSite:'1 site selecionado', noSelectedSites:'Nenhum site selecionado. Você pode continuar sem monitorar.',
+    welcomeSites:'Sites que você quer acompanhar', welcomeSitesHelp:'Digite um domínio (ex.: reddit.com) ou cole uma URL. Salvamos só o domínio, sem www ou caminho.', welcomeDomainPlaceholder:'reddit.com ou https://reddit.com/…', welcomeAdd:'Adicionar site', domainHelp:'Digite um domínio (ex.: reddit.com) ou cole uma URL. Vamos guardar só o domínio, sem www ou caminho.', domainInvalid:'Não reconheci esse site. Digite um domínio como reddit.com ou cole uma URL válida.', domainDuplicate:'Esse site já está na lista.', siteAdded:'{domain} foi adicionado.', noMonitoredSites:'Nenhum site na lista. Adicione um domínio abaixo.', selectedSites:'{count} sites selecionados', selectedSite:'1 site selecionado', noSelectedSites:'Nenhum site selecionado. Você pode continuar sem monitorar.',
     language:'Idioma', start:'Ativar monitoramento', skip:'Continuar sem monitorar', permissionExplainer:'O Chrome vai pedir acesso apenas aos sites da sua lista, para reconhecer quando você está neles.', permissionDenied:'Sem esse acesso, a extensão não consegue contar o tempo. Você pode tentar de novo ou continuar sem monitorar por enquanto.', permissionMissing:'Para contar o tempo, escolha os sites e autorize o acesso a eles em Configurações.', savePermissionDenied:'O acesso aos sites não foi autorizado; as alterações não foram salvas.', saved:'Ajustes salvos.', loadError:'Não foi possível carregar seus dados', loadErrorCopy:'A extensão não respondeu desta vez. Tente novamente ou recarregue a extensão em chrome://extensions.', retry:'Tentar novamente', limit:'Limite diário', weekLabel:'Esta semana',
     streak:'dias dentro da sua meta', streakStart:'Seu primeiro dia começa hoje',
     goal:'Meta: {limit} min/dia — {left} min restantes', left:'{left} min restantes hoje',
@@ -42,7 +42,7 @@ const COPY = {
     avg:'Média (min)', best:'Menor uso', worst:'Maior uso',
     alert:'Alertas de limite', alertSub:'Avisos ao chegar a 80% e 100%',
     setLimit:'Aviso ao atingir', setLimitSub:'Escolha uma referência diária que faça sentido para você',
-    notifications:'Notificações', monitored:'Sites monitorados', weeklyReport:'Resumo semanal', weeklyToggle:'Lembrete semanal', weeklySub:'Receba um resumo uma vez por semana', livePrefix:'Agora em', add:'+ Adicionar',
+    notifications:'Notificações', monitored:'Sites monitorados', weeklyReport:'Resumo semanal', weeklyToggle:'Lembrete semanal', weeklySub:'Receba um resumo uma vez por semana', livePrefix:'Agora em', add:'Adicionar site',
     save:'Salvar ajustes', saved:'Salvo', more:'Mais opções', reset:'Apagar histórico',
     emptySessions:'Nenhuma sessão registrada ainda.', nothing:'Nada registrado ainda hoje.',
     confirmReset:'Apagar todo o histórico deste navegador? Essa ação não pode ser desfeita.',
@@ -57,7 +57,7 @@ const COPY = {
     noSites:'No tracked sites yet.',
     startTitle:'See where your time goes.', startCopy:'Track how long you spend on the sites you choose. Your data stays in your browser. No judgment.',
     privacy:'Your data stays in this browser. Doomscroll Tracker never sends your browsing history to a server.',
-    welcomeSites:'Sites you want to track', welcomeSitesHelp:'Add or remove sites. Only selected sites count toward your time.', welcomeDomainPlaceholder:'e.g. reddit.com', welcomeAdd:'Add site', domainInvalid:'Enter a valid domain, such as reddit.com.', domainDuplicate:'This site is already in your list.', selectedSites:'{count} sites selected', selectedSite:'1 site selected', noSelectedSites:'No sites selected. You can continue without tracking.',
+    welcomeSites:'Sites you want to track', welcomeSitesHelp:'Enter a domain (e.g. reddit.com) or paste a URL. We only keep the domain, without www or the page path.', welcomeDomainPlaceholder:'reddit.com or https://reddit.com/…', welcomeAdd:'Add site', domainHelp:'Enter a domain (e.g. reddit.com) or paste a URL. We only keep the domain, without www or the page path.', domainInvalid:'We could not recognize that site. Enter a domain like reddit.com or paste a valid URL.', domainDuplicate:'This site is already in your list.', siteAdded:'{domain} was added.', noMonitoredSites:'No sites in your list. Add a domain below.', selectedSites:'{count} sites selected', selectedSite:'1 site selected', noSelectedSites:'No sites selected. You can continue without tracking.',
     language:'Language', start:'Enable tracking', skip:'Continue without tracking', permissionExplainer:'Chrome will ask for access only to sites in your list so the extension can recognize when you visit them.', permissionDenied:'Without this access, the extension cannot count time. Try again or continue without tracking for now.', permissionMissing:'To count time, choose sites and allow access to them in Settings.', savePermissionDenied:'Site access was not granted, so settings were not saved.', saved:'Settings saved.', loadError:'Your data could not be loaded', loadErrorCopy:'The extension did not respond this time. Try again or reload it from chrome://extensions.', retry:'Try again', limit:'Daily goal', weekLabel:'This week',
     streak:'days within your goal', streakStart:'Today is a fresh start',
     goal:'Goal: {limit} min/day — {left} min left', left:'{left} min left today',
@@ -111,7 +111,8 @@ function applyLanguage(lang) {
   document.querySelectorAll('.set-label').forEach((el,i) => el.textContent = [tr('limit'),tr('notifications'),tr('weeklyReport'),tr('monitored'),tr('language')][i]);
   document.querySelectorAll('.set-row-label').forEach((el,i) => el.textContent = [tr('setLimit'),tr('alert'),tr('weeklyToggle')][i]);
   document.querySelectorAll('.set-row-sub').forEach((el,i) => el.textContent = [tr('setLimitSub'),tr('alertSub'),tr('weeklySub')][i]);
-  document.getElementById('domain-input').placeholder = currentLang === 'en' ? 'e.g. twitch.tv' : 'ex.: twitch.tv';
+  document.getElementById('domain-help').textContent = tr('domainHelp');
+  document.getElementById('domain-input').placeholder = currentLang === 'en' ? 'reddit.com or https://reddit.com/…' : 'reddit.com ou https://reddit.com/…';
   document.getElementById('domain-add-btn').textContent = tr('add');
   document.getElementById('export-btn').textContent = tr('export');
   document.getElementById('save-settings-btn').textContent = tr('save');
@@ -398,15 +399,22 @@ function renderSettings(s) {
 
 function renderDomainChips() {
   const container = document.getElementById('domain-chips');
-  container.innerHTML = '';
-  currentDomains.forEach((d,i) => {
+  container.replaceChildren();
+  if (!currentDomains.length) {
+    const empty = document.createElement('span'); empty.className = 'domain-empty'; empty.textContent = tr('noMonitoredSites');
+    container.appendChild(empty);
+  }
+  currentDomains.forEach((domain,index) => {
     const chip = document.createElement('div');
     chip.className = 'chip';
-    const label = document.createElement('span'); label.textContent = d;
-    const remove = document.createElement('button'); remove.className = 'rm'; remove.type = 'button'; remove.textContent = '×'; remove.setAttribute('aria-label', currentLang === 'en' ? `Remove ${d}` : `Remover ${d}`);
-    chip.append(label, remove);
+    chip.title = domain;
+    chip.style.setProperty('--chip-color', DOMAIN_META[domain]?.color || '#a487ef');
+    const dot = document.createElement('span'); dot.className = 'chip-dot'; dot.setAttribute('aria-hidden', 'true');
+    const label = document.createElement('span'); label.className = 'chip-name'; label.textContent = domain;
+    const remove = document.createElement('button'); remove.className = 'rm'; remove.type = 'button'; remove.textContent = '×'; remove.setAttribute('aria-label', currentLang === 'en' ? `Remove ${domain}` : `Remover ${domain}`);
+    chip.append(dot, label, remove);
     remove.addEventListener('click', () => {
-      currentDomains.splice(i,1);
+      currentDomains.splice(index,1);
       renderDomainChips();
     });
     container.appendChild(chip);
@@ -437,18 +445,22 @@ function renderWelcomeDomainChips() {
   status.textContent = currentDomains.length === 1 ? tr('selectedSite') : currentDomains.length ? tr('selectedSites', {count:currentDomains.length}) : tr('noSelectedSites');
 }
 
-function addWelcomeDomain() {
-  const input = document.getElementById('welcome-domain-input');
-  const status = document.getElementById('welcome-domain-status');
+function addDomainFromInput(input, status, render) {
   const domain = normalizeDomain(input.value);
-  if (!domain) { status.textContent = tr('domainInvalid'); input.focus(); return; }
+  status.classList.remove('error');
+  if (!domain) { status.textContent = tr('domainInvalid'); status.classList.add('error'); input.focus(); return; }
   if (currentDomains.some(item => item === domain || item.endsWith(`.${domain}`) || domain.endsWith(`.${item}`))) {
-    status.textContent = tr('domainDuplicate'); input.focus(); return;
+    status.textContent = tr('domainDuplicate'); status.classList.add('error'); input.focus(); return;
   }
   currentDomains.push(domain);
   input.value = '';
-  renderWelcomeDomainChips();
+  render();
+  status.textContent = tr('siteAdded', {domain});
   input.focus();
+}
+
+function addWelcomeDomain() {
+  addDomainFromInput(document.getElementById('welcome-domain-input'), document.getElementById('welcome-domain-status'), renderWelcomeDomainChips);
 }
 
 // ── Live session ticker ────────────────────────────────────────
@@ -555,6 +567,7 @@ function normalizeDomain(input) {
   try { host = new URL(raw.includes('://') ? raw : `https://${raw}`).hostname.toLowerCase(); } catch { return null; }
   host = host.replace(/^www\./, '').replace(/\.$/, '');
   if (!host.includes('.') || host.split('.').some(label => !label || label.length > 63 || !/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/.test(label))) return null;
+  if (host.split('.').every(label => /^\d+$/.test(label))) return null;
   return host;
 }
 
@@ -571,19 +584,9 @@ document.getElementById('limit-input').addEventListener('input', e => {
 });
 
 // Adicionar domínio
-document.getElementById('domain-add-btn').addEventListener('click', () => {
-  const inp = document.getElementById('domain-input');
-  const val = normalizeDomain(inp.value);
-  if (!val) { inp.setCustomValidity(currentLang === 'en' ? 'Enter a valid domain, such as reddit.com.' : 'Digite um domínio válido, como reddit.com.'); inp.reportValidity(); return; }
-  inp.setCustomValidity('');
-  if (val && !currentDomains.some(d => d === val || d.endsWith(`.${val}`) || val.endsWith(`.${d}`))) {
-    currentDomains.push(val);
-    renderDomainChips();
-    inp.value = '';
-  } else if (val) { inp.setCustomValidity(currentLang === 'en' ? 'This site is already in your list.' : 'Esse site já está na lista.'); inp.reportValidity(); }
-});
+document.getElementById('domain-add-btn').addEventListener('click', () => addDomainFromInput(document.getElementById('domain-input'), document.getElementById('domain-feedback'), renderDomainChips));
 document.getElementById('domain-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('domain-add-btn').click();
+  if (e.key === 'Enter') { e.preventDefault(); document.getElementById('domain-add-btn').click(); }
 });
 
 // Salvar configurações

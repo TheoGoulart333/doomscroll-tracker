@@ -257,21 +257,30 @@ body{
 .limit-val{font-size:12px;font-weight:800;min-width:50px;text-align:right;color:var(--accent2)}
 
 /* Domain chips */
-.domain-chips{display:flex;flex-wrap:wrap;gap:5px;padding:8px 10px;background:var(--s1);border:1px solid var(--border);border-radius:var(--r2)}
+.domain-chips{display:flex;flex-wrap:wrap;gap:6px;padding:9px;background:var(--s1);border:1px solid var(--border);border-radius:var(--r);min-height:42px}
 .chip{
-  display:inline-flex;align-items:center;gap:4px;
-  padding:3px 8px;background:var(--s2);border:1px solid var(--border);
-  border-radius:999px;font-size:10px;color:var(--muted2);
+  display:inline-flex;align-items:center;gap:7px;
+  padding:5px 6px 5px 10px;background:linear-gradient(135deg,rgba(164,135,239,.09),var(--s2));border:1px solid rgba(164,135,239,.16);
+  border-radius:999px;font-size:11px;color:var(--text);font-weight:550;max-width:100%;
 }
-.chip .rm{cursor:pointer;color:var(--muted);transition:color .15s}
-.chip .rm:hover{color:var(--rose)}
-.add-domain-row{display:flex;gap:6px;margin-top:6px}
+.chip-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip-dot{width:6px;height:6px;border-radius:50%;background:var(--chip-color,var(--accent2));flex:0 0 auto}
+.domain-empty{font-size:10px;color:var(--muted);padding:3px 2px}
+.chip .rm{display:grid;place-items:center;width:19px;height:19px;flex:0 0 auto;border:1px solid var(--border);border-radius:50%;background:rgba(255,255,255,.04);cursor:pointer;color:var(--muted2);font:inherit;font-size:13px;line-height:1;transition:all .15s}
+.chip .rm:hover{color:#fff;background:var(--rose);border-color:var(--rose)}
+.domain-help{font-size:10px;line-height:1.45;color:var(--muted);margin-top:6px}
+.domain-feedback{min-height:14px;font-size:10px;line-height:1.4;color:var(--teal);margin-top:4px}
+.domain-feedback.error{color:var(--amber)}
+.add-domain-row{display:flex;gap:6px;margin-top:8px}
 .add-input{
-  flex:1;padding:7px 10px;background:var(--s2);border:1px solid var(--border);
-  border-radius:var(--r2);color:var(--text);font-size:11px;outline:none;
+  min-width:0;flex:1;padding:8px 10px;background:var(--s2);border:1px solid var(--border);
+  border-radius:var(--r2);color:var(--text);font:inherit;font-size:11px;outline:none;
 }
 .add-input:focus{border-color:var(--accent)}
 .add-input::placeholder{color:var(--muted)}
+.add-domain-btn{white-space:nowrap;padding:0 11px!important;color:var(--accent2)!important;border-color:rgba(164,135,239,.28)!important;background:rgba(164,135,239,.10)!important}
+.add-domain-btn::before{content:'+';font-size:15px;line-height:1}
+.add-domain-btn:hover{background:rgba(164,135,239,.18)!important}
 
 /* ═══════════════════════════════════════════
    BUTTONS
@@ -315,6 +324,7 @@ body{
 .welcome-domain-chip{display:flex;align-items:center;gap:5px;background:rgba(164,135,239,.12);border:1px solid rgba(164,135,239,.18);border-radius:999px;padding:3px 6px 3px 9px;color:var(--text);font-size:10px}
 .welcome-domain-chip button{border:0;background:transparent;color:var(--muted2);font-size:14px;line-height:1;cursor:pointer;padding:0 1px}
 .welcome-domain-status{font-size:10px;color:var(--muted);margin-top:5px;min-height:14px}
+.welcome-domain-status.error{color:var(--amber)}
 @media(prefers-color-scheme:light){
   :root{color-scheme:light;--bg:#f6f5fb;--s1:#ffffff;--s2:#f1eff7;--s3:#e6e2ef;--border:rgba(29,22,46,.10);--text:#241d32;--muted:#706a7d;--muted2:#554f61}
 }
@@ -522,12 +532,14 @@ body{
 
   <!-- Domains -->
   <div class="settings-block">
-    <div class="set-label">Sites monitorados</div>
-    <div class="domain-chips" id="domain-chips"></div>
+    <div class="set-label" id="domains-label">Sites monitorados</div>
+    <div class="domain-chips" id="domain-chips" aria-labelledby="domains-label"></div>
+    <div class="domain-help" id="domain-help">Digite um domínio (ex.: reddit.com) ou cole uma URL. Vamos guardar só o domínio, sem www ou caminho.</div>
     <div class="add-domain-row">
-      <input class="add-input" id="domain-input" type="text" placeholder="ex: twitch.tv">
-      <button class="btn btn-ghost btn-sm" id="domain-add-btn">+ Adicionar</button>
+      <input class="add-input" id="domain-input" type="text" inputmode="url" autocomplete="off" placeholder="reddit.com ou https://reddit.com/..." aria-labelledby="domains-label" aria-describedby="domain-help domain-feedback">
+      <button class="btn btn-sm add-domain-btn" id="domain-add-btn" type="button">Adicionar site</button>
     </div>
+    <div class="domain-feedback" id="domain-feedback" role="status" aria-live="polite"></div>
   </div>
 
   <div class="settings-block">
