@@ -6,7 +6,7 @@
 
 ### Veja para onde vai o tempo que você passa nos feeds.
 
-**Versão 2.5.1**
+**Versão 2.5.2**
 ![Manifest](https://img.shields.io/badge/Manifest-V3-2dd4bf?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-fb7185?style=flat-square)
 ![Privacy](https://img.shields.io/badge/privacy-100%25_local-22d3a5?style=flat-square)
@@ -33,7 +33,6 @@ Você já abriu o Twitter "só por um segundo" e percebeu que passaram 45 minuto
 **Aba Hoje**
 - **Timer ao vivo** — vê em tempo real quantos minutos você está no site atual
 - **Resumo de hoje e da semana** com comparativo vs. ontem e semana passada
-- **Sequência de dias** dentro da sua meta e recorde pessoal
 - **Mensagens acolhedoras**, sem alarmismo ou culpa, com referência ajustável por você
 - **Português, inglês, espanhol e francês**, com idioma sugerido pelo navegador e opção de troca
 
@@ -42,7 +41,7 @@ Você já abriu o Twitter "só por um segundo" e percebeu que passaram 45 minuto
 - **Resumo** de média, melhor e pior dia
 - **Sites mais acessados** na semana
 - **Atividade recente** agrupada por site, com tempo total, número de visitas e horário mais recente
-- **Exportação CSV** com totais por dia, por site e até 50 sessões recentes
+- **Exportação CSV** com totais por dia, por site e até 50 visitas recentes
 
 **Aba Configurações**
 - **Limite diário ajustável** (10–300 min)
@@ -53,9 +52,10 @@ Você já abriu o Twitter "só por um segundo" e percebeu que passaram 45 minuto
 - **Configuração inicial** com explicação de privacidade
 
 ### Privacidade
-- **Zero dados enviados** a servidores externos
-- Histórico e preferências ficam em `chrome.storage.local`; a sessão ativa usa `chrome.storage.session` e não sai do navegador
-- A extensão consulta a aba ativa para verificar se o domínio está na lista escolhida; não coleta páginas fora dela
+- A extensão processa localmente o domínio da aba ativa para verificar se ele está na sua lista
+- Tempo, domínios monitorados e preferências ficam em `chrome.storage.local`; a sessão ativa usa `chrome.storage.session`
+- Nenhum histórico ou dado de navegação é enviado a servidores ou compartilhado com terceiros
+- Como domínios visitados são dados de navegação, a forma de uso e armazenamento está descrita na [Política de Privacidade](PRIVACY.md)
 - Código aberto e auditável
 
 ---
@@ -103,8 +103,7 @@ flowchart LR
 2. **Domínio detectado** → inicia timer (`startTimestamp = Date.now()`)
 3. **Usuário sai do site** (muda de aba, URL ou fica inativo) → `stopTracking()` calcula `agora - startTimestamp` em minutos
 4. **Dados salvos** em `daily`, `weekly`, `siteDaily` (por site/dia) + array de sessões
-5. **Streak recalculado** a cada sessão salva
-6. **Notificação** disparada ao atingir 80% e 100% do limite diário
+5. **Notificação** disparada ao atingir 80% e 100% do limite diário
 
 ### Estrutura dos dados
 
@@ -114,8 +113,6 @@ flowchart LR
   "weekly":    { "2026-W44": 180 },
   "siteDaily": { "2026-11-05": { "youtube.com": 20, "reddit.com": 22 } },
   "sessions":  [{ "domain": "youtube.com", "date": "2026-11-05", "start": "14:32", "minutes": 20 }],
-  "streak":    3,
-  "bestStreak": 7,
   "dailyLimit": 60,
   "trackedDomains": ["youtube.com", "reddit.com", "twitter.com", "..."]
 }
@@ -142,13 +139,14 @@ flowchart LR
 
 ---
 
-## Privacidade
+## Privacidade e permissões
 
 | Item | Detalhe |
 |------|---------|
-| **Coleta de dados** | Nenhum dado é coletado ou enviado |
-| **Armazenamento** | `chrome.storage.local` — exclusivo do navegador do usuário |
-| **Telemetria** | Zero — sem analytics, sem tracking externo |
+| **Dados processados** | Domínios da lista que o usuário escolheu, duração e horários das sessões |
+| **Armazenamento** | `chrome.storage.local` e `chrome.storage.session` — no perfil local do Chrome |
+| **Envio/compartilhamento** | Nenhum dado de navegação é enviado a servidores ou compartilhado com terceiros |
+| **Telemetria** | Sem analytics ou tracking externo |
 | **Código** | 100% open source e auditável |
 
 **Permissões solicitadas:**
@@ -158,6 +156,8 @@ flowchart LR
 - `notifications` — avisos de limite (desativável nas configurações)
 - `alarms` — atualizar o selo e agendar resumos semanais opt-in
 - **Acesso opcional aos sites escolhidos** — solicitado pelo Chrome na configuração inicial ou quando você adiciona domínios. A extensão usa esse acesso para reconhecer as páginas monitoradas; você pode rever ou remover o acesso nas configurações do Chrome.
+
+Para a política pública destinada à Chrome Web Store, consulte [PRIVACY.md](PRIVACY.md).
 
 ---
 

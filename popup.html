@@ -149,21 +149,6 @@ body{
 .card-bg-icon{display:none}
 
 /* ═══════════════════════════════════════════
-   STREAK
-═══════════════════════════════════════════ */
-.streak-row{
-  display:flex;align-items:center;gap:10px;
-  background:var(--s1);border:1px solid var(--border);
-  border-radius:var(--r);padding:10px 14px;margin-bottom:10px;
-}
-.streak-flame{display:none}
-.streak-info{flex:1}
-.streak-num{font-size:18px;font-weight:800;letter-spacing:-0.5px}
-.streak-desc{font-size:10px;color:var(--muted2)}
-.streak-best{font-size:10px;color:var(--muted);text-align:right}
-.streak-best span{color:var(--muted2);font-weight:650}
-
-/* ═══════════════════════════════════════════
    PROGRESS
 ═══════════════════════════════════════════ */
 .progress-block{margin-bottom:10px}
@@ -419,16 +404,6 @@ body{
       <div class="card-sub" id="week-unit">minutos</div>
       <div class="card-delta" id="week-delta"></div>
     </div>
-  </div>
-
-  <!-- Streak -->
-  <div class="streak-row">
-    <div class="streak-flame" id="streak-flame" aria-hidden="true"></div>
-    <div class="streak-info">
-      <div class="streak-num" id="streak-num">0</div>
-      <div class="streak-desc" id="streak-desc">dias abaixo do limite</div>
-    </div>
-    <div class="streak-best"><span id="best-label">Recorde</span><br><span id="best-streak">0</span> <span id="best-unit">dias</span></div>
   </div>
 
   <!-- Limit progress -->

@@ -123,13 +123,11 @@ function applyLanguage(lang) {
   document.querySelectorAll('.tab').forEach((el,i) => el.textContent = [tr('today'),tr('week'),tr('settings')][i]);
   document.querySelector('.tabs').setAttribute('aria-label', tr('navLabel'));
   document.querySelectorAll('.card-label').forEach((el,i) => el.textContent = [tr('today'),tr('weekLabel')][i]);
-  document.getElementById('best-label').textContent = tr('record');
   document.getElementById('progress-label').textContent = tr('limit');
   document.getElementById('live-prefix').textContent = tr('livePrefix');
   document.getElementById('weekly-label').textContent = tr('weeklyReport');
   document.getElementById('weekly-toggle-label').textContent = tr('weeklyToggle');
   document.getElementById('weekly-toggle-sub').textContent = tr('weeklySub');
-  document.getElementById('best-unit').textContent = tr('days');
   document.getElementById('pause-btn').title = tr('pauseTitle');
   document.getElementById('today-unit').textContent = tr('minutes');
   document.getElementById('week-unit').textContent = tr('minutes');
@@ -195,13 +193,6 @@ function getMood(todayMin, limit) {
   return { text:`<strong>${tr('limitReached')}</strong><br>${tr('moodChangeGoal')}` };
 }
 
-function getStreakMessage(streak) {
-  if (streak === 0) return tr('streakStart');
-  if (streak === 1) return tr('streakFirst');
-  if (streak < 4 || (streak >= 7 && streak < 14)) return tr('streakWithin', {count:streak});
-  return tr('streakDays', {count:streak});
-}
-
 // ── Carrega dados ─────────────────────────────────────────────
 
 async function loadStats() {
@@ -218,7 +209,7 @@ async function loadStats() {
 // ── Render: Hoje ───────────────────────────────────────────────
 
 function renderToday(s) {
-  const { today:storedToday=0, week:storedWeek=0, yesterday=0, lastWeek=0, dailyLimit:limit=60, streak=0, bestStreak=0, siteDaily={} } = s;
+  const { today:storedToday=0, week:storedWeek=0, yesterday=0, lastWeek=0, dailyLimit:limit=60, siteDaily={} } = s;
   const liveSeconds = s.liveSession ? (s.liveSession.elapsedSec || 0) : 0;
   const today = Math.floor(((s.todaySeconds ?? storedToday * 60) + liveSeconds) / 60);
   const week = Math.floor(((s.weekSeconds ?? storedWeek * 60) + liveSeconds) / 60);
@@ -256,12 +247,6 @@ function renderToday(s) {
     ? { text:`<strong>${tr('permissionMissing')}</strong>` }
     : getMood(today, limit);
   document.getElementById('mood-text').innerHTML    = mood.text.replace(/<br\s*\/?\s*>/gi, ' ');
-
-  // Streak
-  document.getElementById('streak-num').textContent   = streak;
-  document.getElementById('streak-desc').textContent  = getStreakMessage(streak);
-  document.getElementById('best-streak').textContent  = bestStreak;
-  document.getElementById('streak-flame').textContent = '';
 
   // Progress bar
   const pct  = Math.min(Math.round((today/limit)*100), 100);

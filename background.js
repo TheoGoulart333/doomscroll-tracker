@@ -146,30 +146,11 @@ async function stopTracking() {
         dailySeconds, weeklySeconds, siteDailySeconds,
       });
       await updateBadge(data.daily[today]);
-      await updateStreak(data.daily);
       await checkLimitNotification(data.daily[today]);
     }
   })();
   try { await stopPromise; }
   finally { stopPromise = null; }
-}
-
-// ── Streak ──────────────────────────────────────────────────
-
-async function updateStreak(daily) {
-  const limit = await getSetting('dailyLimit', 60);
-  const today = todayKey();
-  let streak  = 0;
-  const d     = new Date();
-  d.setDate(d.getDate() - 1);
-  for (let i = 0; i < 365; i++) {
-    const key = dateKey(d);
-    if ((daily[key] || 0) <= limit) { streak++; d.setDate(d.getDate() - 1); }
-    else break;
-  }
-  if ((daily[today] || 0) <= limit) streak++;
-  const prev = await chrome.storage.local.get({ bestStreak: 0 });
-  await chrome.storage.local.set({ streak, bestStreak: Math.max(streak, prev.bestStreak) });
 }
 
 // ── Notifications ─────────────────────────────────────────────
@@ -324,7 +305,6 @@ registerChromeListener(chrome.runtime?.onInstalled, async ({ reason }) => {
     trackedDomains: DEFAULT_DOMAINS,
     daily: {}, weekly: {}, siteDaily: {}, sessions: [],
     dailySeconds: {}, weeklySeconds: {}, siteDailySeconds: {},
-    streak: 0, bestStreak: 0,
     dailyLimit: 60, notificationsEnabled: true, weeklyReportEnabled: false,
     isPaused: false,
     lang: preferredLanguage(),
@@ -356,7 +336,7 @@ registerChromeListener(chrome.runtime?.onMessage, (req, sender, sendResponse) =>
       const yest   = yesterdayKey();
       const prevW  = getWeekKey((() => { const d=new Date(); d.setDate(d.getDate()-7); return d; })());
       const data   = await chrome.storage.local.get([
-        'daily','weekly','siteDaily','sessions','dailySeconds','weeklySeconds','siteDailySeconds','streak','bestStreak',
+        'daily','weekly','siteDaily','sessions','dailySeconds','weeklySeconds','siteDailySeconds',
         'dailyLimit','notificationsEnabled','weeklyReportEnabled','isPaused','trackedDomains','lang','onboardingDone'
       ]);
 
@@ -397,8 +377,6 @@ registerChromeListener(chrome.runtime?.onMessage, (req, sender, sendResponse) =>
         daily,
         siteDaily:      data.siteDaily || {},
         sessions:       (data.sessions || []).slice(0, 10),
-        streak:         data.streak   || 0,
-        bestStreak:     data.bestStreak || 0,
         dailyLimit:     data.dailyLimit || 60,
         notificationsEnabled: data.notificationsEnabled !== false,
         weeklyReportEnabled: data.weeklyReportEnabled === true,
@@ -418,7 +396,7 @@ registerChromeListener(chrome.runtime?.onMessage, (req, sender, sendResponse) =>
 
   if (req.type === 'resetData') {
     chrome.storage.local.set(
-      { daily:{}, weekly:{}, siteDaily:{}, sessions:[], dailySeconds:{}, weeklySeconds:{}, siteDailySeconds:{}, streak:0, bestStreak:0 },
+      { daily:{}, weekly:{}, siteDaily:{}, sessions:[], dailySeconds:{}, weeklySeconds:{}, siteDailySeconds:{} },
       async () => { notified80=false; notified100=false; await updateBadge(0); sendResponse({ok:true}); }
     );
     return true;

@@ -61,6 +61,15 @@ test('background starts without contextMenus and registers its required listener
   assert.equal('contextMenus' in app.listeners, false);
 });
 
+test('legacy streak values are ignored so missing history cannot appear as completed days', async () => {
+  const app = createTracker({ local: { streak: 366, bestStreak: 366 } });
+  const response = await new Promise(resolve => {
+    app.listeners['runtime.onMessage'][0]({ type: 'getStats' }, {}, resolve);
+  });
+  assert.equal('streak' in response, false);
+  assert.equal('bestStreak' in response, false);
+});
+
 test('short visits to a site accumulate across leaving and returning', async () => {
   const app = createTracker({ trackedDomains: ['youtube.com'] });
   await app.tracker.startTracking(7, 'https://www.youtube.com/watch?v=first');
