@@ -7,7 +7,7 @@ Obrigado pelo interesse em contribuir! 🎉
 1. **Fork** o repositório no GitHub
 2. **Clone** seu fork:
    ```bash
-   git clone https://github.com/SEU_USUARIO/doomscroll-tracker.git
+   gh repo fork TheoGoulart333/doomscroll-tracker --clone
    cd doomscroll-tracker
    ```
 3. **Carregue no Chrome** (modo desenvolvedor) conforme o README
@@ -46,4 +46,4 @@ Obrigado pelo interesse em contribuir! 🎉
 
 ## Dúvidas?
 
-Abra uma [Issue](https://github.com/SEU_USUARIO/doomscroll-tracker/issues) com a tag `question`.
+Abra uma [Issue](https://github.com/TheoGoulart333/doomscroll-tracker/issues) com a tag `question`.

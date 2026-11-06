@@ -53,7 +53,6 @@ Produtividade.
 | Permission | User-facing purpose |
 |---|---|
 | `storage` | Save the user's settings, daily and weekly totals, and recent sessions in the browser. |
-| `activeTab` | Read the current tab's address after the user opens the extension, so it can show whether that site is monitored. |
 | `idle` | Pause counting while the device is idle and resume when it becomes active. |
 | `notifications` | Show optional daily-goal alerts and the optional weekly summary. |
 | `alarms` | Update the extension badge and schedule the weekly summary when enabled. |

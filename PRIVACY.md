@@ -1,6 +1,6 @@
 # Política de Privacidade — Doomscroll Tracker
 
-Última atualização: 5 de novembro de 2026
+Última atualização: 6 de novembro de 2026
 
 ## Em resumo
 
@@ -18,7 +18,7 @@ Esses dados são necessários para exibir o acompanhamento de tempo solicitado. 
 
 O acesso aos sites é opcional e solicitado apenas para os domínios adicionados à lista. Sem essa autorização, a extensão não consegue reconhecer nem contar o tempo nesses sites. A pessoa pode alterar a lista, revogar permissões nas configurações do Chrome ou continuar sem monitoramento.
 
-As permissões `storage`, `idle`, `notifications` e `alarms` dão suporte ao armazenamento local, pausa quando o dispositivo fica inativo, alertas opcionais e atualização do selo da extensão. O acesso `activeTab` é usado somente por recursos iniciados pela pessoa no Chrome.
+As permissões `storage`, `idle`, `notifications` e `alarms` dão suporte ao armazenamento local, pausa quando o dispositivo fica inativo, alertas opcionais e atualização do selo da extensão. O acesso aos endereços é limitado aos domínios que a pessoa escolhe e autoriza.
 
 ## Compartilhamento e retenção
 

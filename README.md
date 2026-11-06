@@ -6,7 +6,7 @@
 
 ### Veja para onde vai o tempo que você passa nos feeds.
 
-**Versão 2.5.4**
+**Versão 2.5.5**
 ![Manifest](https://img.shields.io/badge/Manifest-V3-2dd4bf?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-fb7185?style=flat-square)
 ![Privacy](https://img.shields.io/badge/privacy-100%25_local-22d3a5?style=flat-square)
@@ -63,6 +63,8 @@ Você já abriu o Twitter "só por um segundo" e percebeu que passaram 45 minuto
 ## Instalação
 
 > Instalação via modo desenvolvedor — não requer publicação na Chrome Web Store. Requer Chrome 102 ou posterior.
+
+**Baixar a versão pronta:** [Doomscroll Tracker para Chrome](https://github.com/TheoGoulart333/doomscroll-tracker/releases/latest). Baixe o arquivo `.zip` da versão, extraia-o e selecione a pasta extraída que contém o `manifest.json` no passo 4.
 
 **1. Clone o repositório:**
 ```bash
@@ -151,7 +153,6 @@ flowchart LR
 
 **Permissões solicitadas:**
 - `storage` — salvar dados localmente
-- `activeTab` — acesso temporário à página atual quando você usa a ação da extensão
 - `idle` — pausar contagem quando o usuário não está usando o computador
 - `notifications` — avisos de limite (desativável nas configurações)
 - `alarms` — atualizar o selo e agendar resumos semanais opt-in
