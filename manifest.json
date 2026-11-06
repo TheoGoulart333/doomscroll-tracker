@@ -2,15 +2,14 @@
   "manifest_version": 3,
   "name": "Doomscroll Tracker",
   "description": "A gentle, private way to notice your scrolling habits. Your data stays on your device.",
-  "version": "2.4.4",
+  "version": "2.5.0",
   "minimum_chrome_version": "102",
   "permissions": [
     "storage",
     "activeTab",
     "idle",
     "notifications",
-    "alarms",
-    "contextMenus"
+    "alarms"
   ],
   "optional_host_permissions": ["https://*/*", "http://*/*"],
   "action": {

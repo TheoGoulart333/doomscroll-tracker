@@ -1,4 +1,5 @@
-// background.js v3 — badge, context menu, weekly report, i18n-ready
+// background.js v3 — badge, weekly report, tracking
+importScripts('domain-utils.js');
 
 const DEFAULT_DOMAINS = [
   "reddit.com","twitter.com","x.com","youtube.com",
@@ -11,6 +12,7 @@ let startTimestamp  = null;
 let activeDomain    = null;
 let notified80      = false;
 let notified100     = false;
+let stopPromise     = null;
 
 // ── Helpers ─────────────────────────────────────────────────
 
@@ -34,10 +36,6 @@ function getWeekKey(date = new Date()) {
 function originsForDomains(domains = []) {
   return [...new Set(domains.flatMap(domain => [`https://*.${domain}/*`, `http://*.${domain}/*`]))];
 }
-function extractDomain(url) {
-  try { return new URL(url).hostname.replace(/^www\./, ''); }
-  catch { return null; }
-}
 async function getSetting(key, def) {
   const r = await chrome.storage.local.get({ [key]: def });
   return r[key];
@@ -53,11 +51,13 @@ function registerChromeListener(event, handler, eventName) {
   event.addListener(handler);
   return true;
 }
+function preferredLanguage(locale = chrome.i18n.getUILanguage()) {
+  const language = String(locale || '').toLowerCase();
+  return language.startsWith('pt') ? 'pt-BR' : language.startsWith('es') ? 'es' : language.startsWith('fr') ? 'fr' : 'en';
+}
 async function matchesDoomscroll(url) {
-  const domain  = extractDomain(url);
-  if (!domain) return null;
   const domains = await getTrackedDomains();
-  return domains.find(d => domain === d || domain.endsWith(`.${d}`)) ? domain : null;
+  return matchesTrackedDomain(url, domains);
 }
 
 // ── Badge ────────────────────────────────────────────────────
@@ -74,9 +74,10 @@ chrome.alarms.create('badge_tick', { periodInMinutes: 1 });
 registerChromeListener(chrome.alarms?.onAlarm, async alarm => {
   if (alarm.name === 'badge_tick') {
     await restoreTrackingSession();
-    const { daily = {} } = await chrome.storage.local.get('daily');
-    const liveMinutes = startTimestamp ? Math.floor((Date.now() - startTimestamp) / 60000) : 0;
-    await updateBadge((daily[todayKey()] || 0) + liveMinutes);
+    const { daily = {}, dailySeconds = {} } = await chrome.storage.local.get(['daily', 'dailySeconds']);
+    const elapsedSeconds = startTimestamp ? Math.floor((Date.now() - startTimestamp) / 1000) : 0;
+    const storedSeconds = dailySeconds[todayKey()] ?? (daily[todayKey()] || 0) * 60;
+    await updateBadge(Math.floor((storedSeconds + elapsedSeconds) / 60));
   }
   if (alarm.name === 'midnight_reset') {
     notified80 = false; notified100 = false;
@@ -93,47 +94,64 @@ async function startTracking(tabId, url) {
   const { isPaused = false } = await chrome.storage.local.get('isPaused');
   if (isPaused) return;
   const domain = await matchesDoomscroll(url);
+  if (domain && activeTabId === tabId && activeDomain === domain && startTimestamp !== null) return;
+  await stopTracking();
   if (domain) {
     activeTabId    = tabId;
     activeDomain   = domain;
     startTimestamp = Date.now();
     await chrome.storage.session.set({ trackingSession: { tabId, domain, startTimestamp } });
-  } else {
-    await stopTracking();
   }
 }
 
 async function stopTracking() {
-  if (activeTabId === null) await restoreTrackingSession();
-  if (activeTabId !== null && startTimestamp !== null && activeDomain) {
-    const durationMs = Date.now() - startTimestamp;
-    const minutes    = Math.round(durationMs / 60000);
-    if (minutes > 0) {
+  if (stopPromise) return stopPromise;
+  stopPromise = (async () => {
+    if (activeTabId === null) await restoreTrackingSession();
+    if (activeTabId === null || startTimestamp === null || !activeDomain) {
+      await chrome.storage.session.remove('trackingSession');
+      return;
+    }
+    const sessionSnapshot = { tabId: activeTabId, domain: activeDomain, startTimestamp };
+    activeTabId = null; startTimestamp = null; activeDomain = null;
+    await chrome.storage.session.remove('trackingSession');
+    const durationSeconds = Math.max(0, Math.floor((Date.now() - sessionSnapshot.startTimestamp) / 1000));
+    if (durationSeconds > 0) {
       const today = todayKey();
       const week  = getWeekKey();
       const data  = await chrome.storage.local.get({
-        daily: {}, weekly: {}, siteDaily: {}, sessions: []
+        daily: {}, weekly: {}, siteDaily: {}, sessions: [],
+        dailySeconds: {}, weeklySeconds: {}, siteDailySeconds: {},
       });
-      data.daily[today]  = (data.daily[today] || 0) + minutes;
-      data.weekly[week]  = (data.weekly[week] || 0) + minutes;
+      const dailySeconds = data.dailySeconds || {};
+      const weeklySeconds = data.weeklySeconds || {};
+      const siteDailySeconds = data.siteDailySeconds || {};
+      dailySeconds[today] = (dailySeconds[today] ?? (data.daily[today] || 0) * 60) + durationSeconds;
+      weeklySeconds[week] = (weeklySeconds[week] ?? (data.weekly[week] || 0) * 60) + durationSeconds;
       if (!data.siteDaily[today]) data.siteDaily[today] = {};
-      data.siteDaily[today][activeDomain] = (data.siteDaily[today][activeDomain] || 0) + minutes;
+      if (!siteDailySeconds[today]) siteDailySeconds[today] = {};
+      siteDailySeconds[today][sessionSnapshot.domain] = (siteDailySeconds[today][sessionSnapshot.domain] ?? (data.siteDaily[today][sessionSnapshot.domain] || 0) * 60) + durationSeconds;
+      data.daily[today] = Math.floor(dailySeconds[today] / 60);
+      data.weekly[week] = Math.floor(weeklySeconds[week] / 60);
+      data.siteDaily[today][sessionSnapshot.domain] = Math.floor(siteDailySeconds[today][sessionSnapshot.domain] / 60);
       const session = {
-        domain: activeDomain, date: today,
-        start: new Date(startTimestamp).toTimeString().slice(0, 5), minutes,
+        domain: sessionSnapshot.domain, date: today,
+        start: new Date(sessionSnapshot.startTimestamp).toTimeString().slice(0, 5),
+        minutes: Math.round(durationSeconds / 60), seconds: durationSeconds,
       };
       data.sessions = [session, ...data.sessions].slice(0, 50);
       await chrome.storage.local.set({
         daily: data.daily, weekly: data.weekly,
         siteDaily: data.siteDaily, sessions: data.sessions,
+        dailySeconds, weeklySeconds, siteDailySeconds,
       });
       await updateBadge(data.daily[today]);
       await updateStreak(data.daily);
       await checkLimitNotification(data.daily[today]);
     }
-  }
-  activeTabId = null; startTimestamp = null; activeDomain = null;
-  await chrome.storage.session.remove('trackingSession');
+  })();
+  try { await stopPromise; }
+  finally { stopPromise = null; }
 }
 
 // ── Streak ──────────────────────────────────────────────────
@@ -171,6 +189,14 @@ async function checkLimitNotification(todayMin) {
       warn:  [`You have reached ${todayMin} min today (goal: ${limit} min).`, 'Near your daily goal'],
       limit: [`You reached your ${limit} min goal. Consider taking a break.`, 'Doomscroll Tracker'],
     },
+    es: {
+      warn:  [`Ya llevas ${todayMin} min hoy (objetivo: ${limit} min).`, 'Cerca de tu objetivo diario'],
+      limit: [`Has alcanzado tu objetivo de ${limit} min. Considera hacer una pausa.`, 'Doomscroll Tracker'],
+    },
+    fr: {
+      warn:  [`Vous avez suivi ${todayMin} min aujourd’hui (objectif : ${limit} min).`, 'Objectif quotidien presque atteint'],
+      limit: [`Votre objectif de ${limit} min est atteint. Pensez à faire une pause.`, 'Doomscroll Tracker'],
+    },
   };
   const m = msgs[lang] || msgs['en'];
 
@@ -202,10 +228,14 @@ async function sendWeeklyReport() {
   const m    = mins % 60;
   const timeStr = h > 0 ? `${h}h ${m}min` : `${m}min`;
 
-  const title   = lang === 'pt-BR' ? 'Resumo semanal — Doomscroll Tracker' : 'Weekly report — Doomscroll Tracker';
-  const message = lang === 'pt-BR'
-    ? `Na semana passada você passou ${timeStr} em sites monitorados. Veja seus detalhes!`
-    : `Last week you spent ${timeStr} on tracked sites. Check your stats!`;
+  const reportText = {
+    'pt-BR': `Na semana passada você passou ${timeStr} em sites monitorados. Veja seus detalhes!`,
+    en: `Last week you spent ${timeStr} on tracked sites. Check your stats!`,
+    es: `La semana pasada pasaste ${timeStr} en los sitios seguidos. ¡Consulta tus estadísticas!`,
+    fr: `La semaine dernière, vous avez passé ${timeStr} sur les sites suivis. Consultez vos statistiques !`,
+  };
+  const title = lang === 'pt-BR' ? 'Resumo semanal — Doomscroll Tracker' : lang === 'es' ? 'Resumen semanal — Doomscroll Tracker' : lang === 'fr' ? 'Résumé hebdomadaire — Doomscroll Tracker' : 'Weekly report — Doomscroll Tracker';
+  const message = reportText[lang] || reportText.en;
 
   chrome.notifications.create('weekly_report', {
     type: 'basic', iconUrl: 'icons/icon-48.png',
@@ -225,58 +255,6 @@ function getNextWeeklyReport() {
   if (next.getTime() <= Date.now()) next.setDate(next.getDate() + 7);
   return next.getTime();
 }
-
-// ── Context Menu ──────────────────────────────────────────────
-
-function rebuildContextMenu(lang = 'pt-BR') {
-  const menus = chrome.contextMenus;
-  if (!contextMenuListenerReady || !menus || typeof menus.removeAll !== 'function' || typeof menus.create !== 'function') return;
-  try {
-    menus.removeAll(() => {
-      if (chrome.runtime.lastError) {
-        console.warn('Doomscroll Tracker: could not clear the context menu.', chrome.runtime.lastError.message);
-        return;
-      }
-      try {
-        menus.create({
-          id: 'toggle-track-site',
-          title: lang === 'en' ? 'Track this site' : 'Monitorar este site',
-          contexts: ['page'],
-        }, () => {
-          if (chrome.runtime.lastError) console.warn('Doomscroll Tracker: could not create the context menu.', chrome.runtime.lastError.message);
-        });
-      } catch (error) {
-        console.warn('Doomscroll Tracker: context menu is unavailable.', error);
-      }
-    });
-  } catch (error) {
-    console.warn('Doomscroll Tracker: context menu is unavailable.', error);
-  }
-}
-
-const contextMenuListenerReady = registerChromeListener(chrome.contextMenus?.onClicked, (info, tab) => {
-  if (info.menuItemId !== 'toggle-track-site') return;
-  const domain = extractDomain(tab?.url || '');
-  if (!domain) return;
-
-  const origins = originsForDomains([domain]);
-  chrome.permissions.request({ origins }, granted => {
-    if (!granted) return;
-    (async () => {
-      const domains = await getTrackedDomains();
-      if (domains.some(d => domain === d || domain.endsWith(`.${d}`))) return;
-      const updated = [...domains, domain];
-      await chrome.storage.local.set({ trackedDomains: updated });
-      await startTracking(tab.id, tab.url || '');
-      const lang = await getSetting('lang', 'pt-BR');
-      chrome.notifications.create({
-        type: 'basic', iconUrl: 'icons/icon-48.png',
-        title: 'Doomscroll Tracker',
-        message: lang === 'en' ? `${domain} is now tracked.` : `${domain} agora está sendo monitorado.`,
-      });
-    })();
-  });
-}, 'chrome.contextMenus.onClicked');
 
 // ── Listeners ─────────────────────────────────────────────────
 
@@ -345,16 +323,16 @@ registerChromeListener(chrome.runtime?.onInstalled, async ({ reason }) => {
   const defaults = {
     trackedDomains: DEFAULT_DOMAINS,
     daily: {}, weekly: {}, siteDaily: {}, sessions: [],
+    dailySeconds: {}, weeklySeconds: {}, siteDailySeconds: {},
     streak: 0, bestStreak: 0,
     dailyLimit: 60, notificationsEnabled: true, weeklyReportEnabled: false,
     isPaused: false,
-    lang: chrome.i18n.getUILanguage().toLowerCase().startsWith('pt') ? 'pt-BR' : 'en',
+    lang: preferredLanguage(),
     onboardingDone: false,
   };
   const existing = await chrome.storage.local.get(Object.keys(defaults));
   const missing = Object.fromEntries(Object.entries(defaults).filter(([key]) => existing[key] === undefined));
   if (Object.keys(missing).length) await chrome.storage.local.set(missing);
-  rebuildContextMenu(existing.lang || defaults.lang);
   if (reason === 'update' && existing.onboardingDone) {
     const migrationOrigins = originsForDomains(existing.trackedDomains || DEFAULT_DOMAINS);
     let accessGranted = false;
@@ -378,7 +356,7 @@ registerChromeListener(chrome.runtime?.onMessage, (req, sender, sendResponse) =>
       const yest   = yesterdayKey();
       const prevW  = getWeekKey((() => { const d=new Date(); d.setDate(d.getDate()-7); return d; })());
       const data   = await chrome.storage.local.get([
-        'daily','weekly','siteDaily','sessions','streak','bestStreak',
+        'daily','weekly','siteDaily','sessions','dailySeconds','weeklySeconds','siteDailySeconds','streak','bestStreak',
         'dailyLimit','notificationsEnabled','weeklyReportEnabled','isPaused','trackedDomains','lang','onboardingDone'
       ]);
 
@@ -390,17 +368,30 @@ registerChromeListener(chrome.runtime?.onMessage, (req, sender, sendResponse) =>
       const daily          = data.daily || {};
 
       let liveSession = null;
-      if (activeTabId && startTimestamp && activeDomain) {
+      if (activeTabId !== null && startTimestamp !== null && activeDomain) {
         liveSession = {
           domain: activeDomain,
           elapsed: Math.round((Date.now() - startTimestamp) / 60000),
-          elapsedSec: Math.round((Date.now() - startTimestamp) / 1000),
+          elapsedSec: Math.floor((Date.now() - startTimestamp) / 1000),
         };
       }
+      const dailySeconds = data.dailySeconds || {};
+      const weeklySeconds = data.weeklySeconds || {};
+      const siteDailySeconds = data.siteDailySeconds || {};
+      const todaySeconds = dailySeconds[today] ?? (daily[today] || 0) * 60;
+      const weekSeconds = weeklySeconds[week] ?? ((data.weekly || {})[week] || 0) * 60;
+      const liveSiteSeconds = liveSession
+        ? (siteDailySeconds[today]?.[liveSession.domain] ?? ((data.siteDaily || {})[today]?.[liveSession.domain] || 0) * 60) + liveSession.elapsedSec
+        : 0;
+      const liveSiteMinutes = Math.floor(liveSiteSeconds / 60);
+      if (liveSession) liveSession.siteElapsedSec = liveSiteSeconds;
 
       sendResponse({
         today:          daily[today]  || 0,
         week:           (data.weekly || {})[week]  || 0,
+        todaySeconds,
+        weekSeconds,
+        liveSiteMinutes,
         yesterday:      daily[yest]   || 0,
         lastWeek:       (data.weekly || {})[prevW] || 0,
         daily,
@@ -427,7 +418,7 @@ registerChromeListener(chrome.runtime?.onMessage, (req, sender, sendResponse) =>
 
   if (req.type === 'resetData') {
     chrome.storage.local.set(
-      { daily:{}, weekly:{}, siteDaily:{}, sessions:[], streak:0, bestStreak:0 },
+      { daily:{}, weekly:{}, siteDaily:{}, sessions:[], dailySeconds:{}, weeklySeconds:{}, siteDailySeconds:{}, streak:0, bestStreak:0 },
       async () => { notified80=false; notified100=false; await updateBadge(0); sendResponse({ok:true}); }
     );
     return true;
@@ -441,7 +432,6 @@ registerChromeListener(chrome.runtime?.onMessage, (req, sender, sendResponse) =>
       trackedDomains:      req.trackedDomains,
       lang:                req.lang,
     }, () => {
-      rebuildContextMenu(req.lang || 'pt-BR');
       sendResponse({ ok: true });
     });
     return true;

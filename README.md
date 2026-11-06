@@ -6,7 +6,7 @@
 
 ### Veja para onde vai o tempo que você passa nos feeds.
 
-**Versão 2.4.4**
+**Versão 2.5.0**
 ![Manifest](https://img.shields.io/badge/Manifest-V3-2dd4bf?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-fb7185?style=flat-square)
 ![Privacy](https://img.shields.io/badge/privacy-100%25_local-22d3a5?style=flat-square)
@@ -35,7 +35,7 @@ Você já abriu o Twitter "só por um segundo" e percebeu que passaram 45 minuto
 - **Resumo de hoje e da semana** com comparativo vs. ontem e semana passada
 - **Sequência de dias** dentro da sua meta e recorde pessoal
 - **Mensagens acolhedoras**, sem alarmismo ou culpa, com referência ajustável por você
-- **Português e inglês**, com idioma sugerido pelo navegador e opção de troca
+- **Português, inglês, espanhol e francês**, com idioma sugerido pelo navegador e opção de troca
 
 **Aba Semana**
 - **Gráfico dos últimos 7 dias** com destaque no dia atual
@@ -47,7 +47,7 @@ Você já abriu o Twitter "só por um segundo" e percebeu que passaram 45 minuto
 **Aba Configurações**
 - **Limite diário ajustável** (10–300 min)
 - **Lembretes opcionais** ao chegar a 80% e 100% do limite
-- **Lista de sites personalizável** com validação e menu de contexto
+- **Lista de sites personalizável** — adicione um domínio ou cole uma URL; o tempo continua acumulado ao alternar entre abas
 - **Resumo semanal opcional**, desativado por padrão
 - **Tema claro ou escuro** conforme a preferência do sistema
 - **Configuração inicial** com explicação de privacidade
@@ -157,7 +157,6 @@ flowchart LR
 - `idle` — pausar contagem quando o usuário não está usando o computador
 - `notifications` — avisos de limite (desativável nas configurações)
 - `alarms` — atualizar o selo e agendar resumos semanais opt-in
-- `contextMenus` — adicionar o site atual pelo menu do botão direito
 - **Acesso opcional aos sites escolhidos** — solicitado pelo Chrome na configuração inicial ou quando você adiciona domínios. A extensão usa esse acesso para reconhecer as páginas monitoradas; você pode rever ou remover o acesso nas configurações do Chrome.
 
 ---
@@ -167,11 +166,14 @@ flowchart LR
 ```
 doomscroll-tracker/
 ├── manifest.json        # Declaração da extensão (MV3)
+├── domain-utils.js      # Normalização e correspondência de domínios
 ├── background.js        # Service worker — coração do rastreamento
 ├── popup.html           # Interface principal (340px, 3 abas)
 ├── popup.js             # Lógica do popup: tabs, charts, timer, export
 ├── options.html         # Página de opções completa
 ├── options.js           # Lógica das opções
+├── package.json         # Comando para executar os testes automatizados
+├── tests/               # Testes de domínio, opções, idiomas e sessões
 ├── icons/
 │   ├── icon-16.png
 │   ├── icon-32.png
@@ -181,6 +183,12 @@ doomscroll-tracker/
 ├── CONTRIBUTING.md
 └── README.md
 ```
+
+---
+
+## Testes
+
+Execute `npm test` para verificar normalização de domínios, inclusão pela página de opções, idiomas e acúmulo de sessões ao alternar entre sites.
 
 ---
 

@@ -11,7 +11,7 @@
     *{box-sizing:border-box}body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,sans-serif;padding:48px 20px}
     main{max-width:640px;margin:auto}.brand{display:flex;align-items:center;gap:13px;margin-bottom:28px}.mark{width:46px;height:46px;display:grid;place-items:center;border-radius:14px;background:#292532;border:1px solid rgba(182,165,226,.22);color:var(--accent)}.brand h1{font-size:19px;margin:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:13px}
     .card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:24px;box-shadow:0 18px 44px #0002}.card h2{font-size:18px;margin:0 0 6px}.intro{color:var(--muted);margin:0 0 20px;font-size:13px}.privacy{padding:12px 14px;border-radius:11px;background:color-mix(in srgb,var(--teal) 9%,transparent);border:1px solid color-mix(in srgb,var(--teal) 25%,transparent);color:var(--muted);font-size:13px;margin:0 0 22px}
-    label{display:block;font-weight:650;font-size:13px;margin-bottom:7px}textarea{display:block;width:100%;min-height:190px;resize:vertical;padding:13px;border:1px solid var(--border);border-radius:11px;background:var(--field);color:var(--text);font:14px/1.6 ui-monospace,SFMono-Regular,monospace}textarea:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.help{color:var(--muted);font-size:12px;margin:8px 0 16px}.actions{display:flex;align-items:center;gap:12px}.save{border:0;border-radius:10px;background:var(--accent);color:white;font:650 14px system-ui;padding:10px 16px;cursor:pointer}.status{font-size:13px;color:var(--teal);min-height:20px}.foot{color:var(--muted);font-size:12px;margin:18px 0 0}
+    label{display:block;font-weight:650;font-size:13px;margin-bottom:7px}textarea{display:block;width:100%;min-height:190px;resize:vertical;padding:13px;border:1px solid var(--border);border-radius:11px;background:var(--field);color:var(--text);font:14px/1.6 ui-monospace,SFMono-Regular,monospace}textarea:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.help{color:var(--muted);font-size:12px;line-height:1.5;margin:8px 0 16px}.add-row{display:flex;gap:9px;margin:0 0 18px}.add-row input{min-width:0;flex:1;border:1px solid var(--border);border-radius:10px;background:var(--field);color:var(--text);font:14px system-ui;padding:10px 12px}.add-site{border:1px solid color-mix(in srgb,var(--accent) 40%,transparent);border-radius:10px;background:color-mix(in srgb,var(--accent) 14%,var(--panel));color:var(--text);font:650 13px system-ui;padding:10px 14px;white-space:nowrap;cursor:pointer}.actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.save{border:0;border-radius:10px;background:var(--accent);color:white;font:650 14px system-ui;padding:10px 16px;cursor:pointer}.status{font-size:13px;color:var(--teal);min-height:20px}.status.error{color:var(--rose,#fb7185)}.foot{color:var(--muted);font-size:12px;margin:18px 0 0}
     @media(max-width:520px){body{padding:24px 14px}.card{padding:18px}}
   </style>
 </head>
@@ -25,10 +25,13 @@
       <label for="domains" id="label">Domínios monitorados</label>
       <textarea id="domains" spellcheck="false" autocomplete="off" aria-describedby="help"></textarea>
       <p class="help" id="help">Exemplo: reddit.com ou www.youtube.com. Prefixos http e https também são aceitos.</p>
+      <label for="new-domain" id="add-label">Adicionar um site</label>
+      <div class="add-row"><input id="new-domain" type="text" inputmode="url" autocomplete="off" placeholder="reddit.com ou https://reddit.com/…"><button class="add-site" id="add-domain" type="button">Adicionar à lista</button></div>
       <div class="actions"><button class="save" id="save" type="button">Salvar alterações</button><span class="status" id="status" role="status" aria-live="polite"></span></div>
     </section>
     <p class="foot" id="foot">Você pode mudar a lista a qualquer momento no popup ou nesta página.</p>
   </main>
+  <script src="domain-utils.js"></script>
   <script src="options.js"></script>
 </body>
 </html>
