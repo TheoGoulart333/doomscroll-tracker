@@ -6,7 +6,7 @@
 
 ### Veja para onde vai o tempo que você passa nos feeds.
 
-**Versão 2.5.0**
+**Versão 2.5.1**
 ![Manifest](https://img.shields.io/badge/Manifest-V3-2dd4bf?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-fb7185?style=flat-square)
 ![Privacy](https://img.shields.io/badge/privacy-100%25_local-22d3a5?style=flat-square)
@@ -41,7 +41,7 @@ Você já abriu o Twitter "só por um segundo" e percebeu que passaram 45 minuto
 - **Gráfico dos últimos 7 dias** com destaque no dia atual
 - **Resumo** de média, melhor e pior dia
 - **Sites mais acessados** na semana
-- **Sessões recentes** com horário de início e duração
+- **Atividade recente** agrupada por site, com tempo total, número de visitas e horário mais recente
 - **Exportação CSV** com totais por dia, por site e até 50 sessões recentes
 
 **Aba Configurações**
