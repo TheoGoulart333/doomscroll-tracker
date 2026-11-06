@@ -229,16 +229,32 @@ function getNextWeeklyReport() {
 // ── Context Menu ──────────────────────────────────────────────
 
 function rebuildContextMenu(lang = 'pt-BR') {
-  chrome.contextMenus.removeAll(() => {
-    chrome.contextMenus.create({
-      id: 'toggle-track-site',
-      title: lang === 'en' ? 'Track this site' : 'Monitorar este site',
-      contexts: ['page'],
+  const menus = chrome.contextMenus;
+  if (!contextMenuListenerReady || !menus || typeof menus.removeAll !== 'function' || typeof menus.create !== 'function') return;
+  try {
+    menus.removeAll(() => {
+      if (chrome.runtime.lastError) {
+        console.warn('Doomscroll Tracker: could not clear the context menu.', chrome.runtime.lastError.message);
+        return;
+      }
+      try {
+        menus.create({
+          id: 'toggle-track-site',
+          title: lang === 'en' ? 'Track this site' : 'Monitorar este site',
+          contexts: ['page'],
+        }, () => {
+          if (chrome.runtime.lastError) console.warn('Doomscroll Tracker: could not create the context menu.', chrome.runtime.lastError.message);
+        });
+      } catch (error) {
+        console.warn('Doomscroll Tracker: context menu is unavailable.', error);
+      }
     });
-  });
+  } catch (error) {
+    console.warn('Doomscroll Tracker: context menu is unavailable.', error);
+  }
 }
 
-registerChromeListener(chrome.contextMenus?.onClicked, (info, tab) => {
+const contextMenuListenerReady = registerChromeListener(chrome.contextMenus?.onClicked, (info, tab) => {
   if (info.menuItemId !== 'toggle-track-site') return;
   const domain = extractDomain(tab?.url || '');
   if (!domain) return;

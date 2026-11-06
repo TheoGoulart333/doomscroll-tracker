@@ -6,7 +6,7 @@
 
 ### Veja para onde vai o tempo que você passa nos feeds.
 
-**Versão 2.4.2**
+**Versão 2.4.3**
 ![Manifest](https://img.shields.io/badge/Manifest-V3-2dd4bf?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-fb7185?style=flat-square)
 ![Privacy](https://img.shields.io/badge/privacy-100%25_local-22d3a5?style=flat-square)
