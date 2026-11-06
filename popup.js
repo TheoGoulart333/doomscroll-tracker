@@ -31,8 +31,9 @@ const COPY = {
     todayCompare:'vs ontem', weekCompare:'vs semana passada',
     limitReached:'Limite alcançado por hoje. Se puder, faça uma pausa.',
     noSites:'Nenhum site monitorado por enquanto.',
-    startTitle:'Perceba para onde vai seu tempo.', startCopy:'Veja quanto tempo você passa nos sites que escolheu acompanhar. Seus dados ficam com você e a extensão não julga seu uso.',
-    privacy:'Seus dados ficam neste navegador. O Doomscroll Tracker não envia histórico para nenhum servidor.',
+    startTitle:'Perceba para onde vai seu tempo.', startCopy:'Acompanhe quanto tempo você passa nos sites que escolher. Seus dados ficam no seu navegador. Sem julgamentos.',
+    privacy:'Seus dados ficam neste navegador. O Doomscroll Tracker não envia seu histórico para nenhum servidor.',
+    welcomeSites:'Sites que você quer acompanhar', welcomeSitesHelp:'Adicione ou remova sites. Só os escolhidos entram na contagem.', welcomeDomainPlaceholder:'ex.: reddit.com', welcomeAdd:'Adicionar', domainInvalid:'Digite um domínio válido, como reddit.com.', domainDuplicate:'Esse site já está na lista.', selectedSites:'{count} sites selecionados', selectedSite:'1 site selecionado', noSelectedSites:'Nenhum site selecionado. Você pode continuar sem monitorar.',
     language:'Idioma', start:'Ativar monitoramento', skip:'Continuar sem monitorar', permissionExplainer:'O Chrome vai pedir acesso apenas aos sites da sua lista, para reconhecer quando você está neles.', permissionDenied:'Sem esse acesso, a extensão não consegue contar o tempo. Você pode tentar de novo ou continuar sem monitorar por enquanto.', permissionMissing:'Para contar o tempo, escolha os sites e autorize o acesso a eles em Configurações.', savePermissionDenied:'O acesso aos sites não foi autorizado; as alterações não foram salvas.', saved:'Ajustes salvos.', loadError:'Não foi possível carregar seus dados', loadErrorCopy:'A extensão não respondeu desta vez. Tente novamente ou recarregue a extensão em chrome://extensions.', retry:'Tentar novamente', limit:'Limite diário', weekLabel:'Esta semana',
     streak:'dias dentro da sua meta', streakStart:'Seu primeiro dia começa hoje',
     goal:'Meta: {limit} min/dia — {left} min restantes', left:'{left} min restantes hoje',
@@ -54,8 +55,9 @@ const COPY = {
     todayCompare:'vs yesterday', weekCompare:'vs last week',
     limitReached:'That’s your daily goal. Consider taking a break.',
     noSites:'No tracked sites yet.',
-    startTitle:'See where your time goes.', startCopy:'Notice how long you spend on the sites you choose. Your data stays with you, and there is no judgment about how you use your time.',
+    startTitle:'See where your time goes.', startCopy:'Track how long you spend on the sites you choose. Your data stays in your browser. No judgment.',
     privacy:'Your data stays in this browser. Doomscroll Tracker never sends your browsing history to a server.',
+    welcomeSites:'Sites you want to track', welcomeSitesHelp:'Add or remove sites. Only selected sites count toward your time.', welcomeDomainPlaceholder:'e.g. reddit.com', welcomeAdd:'Add site', domainInvalid:'Enter a valid domain, such as reddit.com.', domainDuplicate:'This site is already in your list.', selectedSites:'{count} sites selected', selectedSite:'1 site selected', noSelectedSites:'No sites selected. You can continue without tracking.',
     language:'Language', start:'Enable tracking', skip:'Continue without tracking', permissionExplainer:'Chrome will ask for access only to sites in your list so the extension can recognize when you visit them.', permissionDenied:'Without this access, the extension cannot count time. Try again or continue without tracking for now.', permissionMissing:'To count time, choose sites and allow access to them in Settings.', savePermissionDenied:'Site access was not granted, so settings were not saved.', saved:'Settings saved.', loadError:'Your data could not be loaded', loadErrorCopy:'The extension did not respond this time. Try again or reload it from chrome://extensions.', retry:'Try again', limit:'Daily goal', weekLabel:'This week',
     streak:'days within your goal', streakStart:'Today is a fresh start',
     goal:'Goal: {limit} min/day — {left} min left', left:'{left} min left today',
@@ -86,6 +88,11 @@ function applyLanguage(lang) {
   document.getElementById('welcome-skip').textContent = tr('skip');
   document.getElementById('welcome-language-label').textContent = tr('language');
   document.getElementById('welcome-start').textContent = tr('start');
+  document.getElementById('welcome-sites-label').textContent = tr('welcomeSites');
+  document.getElementById('welcome-sites-help').textContent = tr('welcomeSitesHelp');
+  document.getElementById('welcome-domain-input').placeholder = tr('welcomeDomainPlaceholder');
+  document.getElementById('welcome-domain-input').setAttribute('aria-label', tr('welcomeSites'));
+  document.getElementById('welcome-add-domain').textContent = tr('welcomeAdd');
   document.getElementById('language-label').textContent = tr('language');
   document.querySelectorAll('.tab').forEach((el,i) => el.textContent = [tr('today'),tr('week'),tr('settings')][i]);
   document.querySelector('.tabs').setAttribute('aria-label', currentLang === 'en' ? 'Doomscroll Tracker navigation' : 'Navegação do Doomscroll Tracker');
@@ -112,6 +119,7 @@ function applyLanguage(lang) {
   document.getElementById('reset-btn').textContent = tr('reset');
   document.getElementById('language-input').value = currentLang;
   document.getElementById('welcome-lang').value = currentLang;
+  if (document.getElementById('welcome-domain-chips')) renderWelcomeDomainChips();
   if (statsCache && Object.keys(statsCache).length) { renderToday(statsCache); renderWeek(statsCache); updateStatusPill(statsCache.isPaused, statsCache.trackingPermissionGranted); }
 }
 
@@ -222,7 +230,7 @@ function renderToday(s) {
   const mood = s.trackingPermissionGranted === false
     ? { text:`<strong>${tr('permissionMissing')}</strong>` }
     : getMood(today, limit);
-  document.getElementById('mood-text').innerHTML    = mood.text;
+  document.getElementById('mood-text').innerHTML    = mood.text.replace(/<br\s*\/?\s*>/gi, ' ');
 
   // Streak
   document.getElementById('streak-num').textContent   = streak;
@@ -377,6 +385,7 @@ function renderSettings(s) {
   const { dailyLimit=60, notificationsEnabled=true, weeklyReportEnabled=false, trackedDomains=[], lang='pt-BR' } = s;
   applyLanguage(lang);
   currentDomains = [...trackedDomains];
+  renderWelcomeDomainChips();
 
   document.getElementById('limit-input').value   = dailyLimit;
   document.getElementById('limit-display').textContent = `${dailyLimit} min`;
@@ -402,6 +411,44 @@ function renderDomainChips() {
     });
     container.appendChild(chip);
   });
+}
+
+function renderWelcomeDomainChips() {
+  const container = document.getElementById('welcome-domain-chips');
+  if (!container) return;
+  container.replaceChildren();
+  currentDomains.forEach((domain, index) => {
+    const chip = document.createElement('div');
+    chip.className = 'welcome-domain-chip';
+    const label = document.createElement('span');
+    label.textContent = domain;
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.textContent = '×';
+    remove.setAttribute('aria-label', currentLang === 'en' ? `Remove ${domain}` : `Remover ${domain}`);
+    remove.addEventListener('click', () => {
+      currentDomains.splice(index, 1);
+      renderWelcomeDomainChips();
+    });
+    chip.append(label, remove);
+    container.appendChild(chip);
+  });
+  const status = document.getElementById('welcome-domain-status');
+  status.textContent = currentDomains.length === 1 ? tr('selectedSite') : currentDomains.length ? tr('selectedSites', {count:currentDomains.length}) : tr('noSelectedSites');
+}
+
+function addWelcomeDomain() {
+  const input = document.getElementById('welcome-domain-input');
+  const status = document.getElementById('welcome-domain-status');
+  const domain = normalizeDomain(input.value);
+  if (!domain) { status.textContent = tr('domainInvalid'); input.focus(); return; }
+  if (currentDomains.some(item => item === domain || item.endsWith(`.${domain}`) || domain.endsWith(`.${item}`))) {
+    status.textContent = tr('domainDuplicate'); input.focus(); return;
+  }
+  currentDomains.push(domain);
+  input.value = '';
+  renderWelcomeDomainChips();
+  input.focus();
 }
 
 // ── Live session ticker ────────────────────────────────────────
@@ -589,9 +636,13 @@ document.getElementById('reset-btn').addEventListener('click', () => {
 document.getElementById('load-retry').addEventListener('click', init);
 
 document.getElementById('welcome-lang').addEventListener('change', e => applyLanguage(e.target.value));
+document.getElementById('welcome-add-domain').addEventListener('click', addWelcomeDomain);
+document.getElementById('welcome-domain-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); addWelcomeDomain(); }
+});
 document.getElementById('language-input').addEventListener('change', e => applyLanguage(e.target.value));
 function finishOnboarding(lang) {
-  const domains = currentDomains.length ? currentDomains : (statsCache.trackedDomains || ['reddit.com','twitter.com','x.com','youtube.com','instagram.com','tiktok.com','facebook.com','huffpost.com','buzzfeed.com','twitch.tv','linkedin.com']);
+  const domains = [...currentDomains];
   chrome.runtime.sendMessage({ type:'saveSettings', dailyLimit:statsCache.dailyLimit || 60, notificationsEnabled:statsCache.notificationsEnabled !== false, weeklyReportEnabled:statsCache.weeklyReportEnabled === true, trackedDomains:domains, lang }, () => {
     chrome.runtime.sendMessage({ type:'completeOnboarding' }, () => { document.getElementById('onboarding').hidden = true; init(); });
   });
@@ -601,8 +652,9 @@ function permissionOrigins(domains) {
 }
 document.getElementById('welcome-start').addEventListener('click', () => {
   const lang = document.getElementById('welcome-lang').value;
-  const origins = permissionOrigins(currentDomains.length ? currentDomains : (statsCache.trackedDomains || []));
+  const origins = permissionOrigins(currentDomains);
   const message = document.getElementById('permission-message');
+  if (!origins.length) { message.hidden = true; finishOnboarding(lang); return; }
   chrome.permissions.request({ origins }, granted => {
     if (!granted) { message.hidden = false; message.textContent = tr('permissionDenied'); return; }
     message.hidden = true;
