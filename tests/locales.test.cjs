@@ -18,3 +18,27 @@ test('popup has complete Spanish and French copy and localized weekday labels', 
   assert.equal(context.catalog.es.language, 'Idioma');
   assert.equal(context.catalog.fr.language, 'Langue');
 });
+
+test('summary duration labels use singular and plural forms correctly in every locale', () => {
+  const source = fs.readFileSync(path.join(__dirname, '..', 'popup.js'), 'utf8');
+  const start = source.indexOf('const COPY =');
+  const end = source.indexOf('\nfunction applyLanguage', start);
+  const durationStart = source.indexOf('function formatCardDuration(');
+  const durationEnd = source.indexOf('\nfunction fmtLive', durationStart);
+  const context = {};
+  vm.runInNewContext(`let currentLang = 'pt-BR';\n${source.slice(start, end)}\n${source.slice(durationStart, durationEnd)}\nglobalThis.duration = formatCardDuration; globalThis.catalog = COPY; globalThis.setLang = lang => { currentLang = lang; };`, context);
+
+  const expected = {
+    'pt-BR': ['minuto', 'minutos', 'hora', 'horas'],
+    en: ['minute', 'minutes', 'hour', 'hours'],
+    es: ['minuto', 'minutos', 'hora', 'horas'],
+    fr: ['minute', 'minutes', 'heure', 'heures'],
+  };
+  for (const [locale, labels] of Object.entries(expected)) {
+    context.setLang(locale);
+    assert.deepEqual({ ...context.duration(1) }, { value: '1', unit: labels[0] });
+    assert.deepEqual({ ...context.duration(2) }, { value: '2', unit: labels[1] });
+    assert.deepEqual({ ...context.duration(60) }, { value: '1', unit: labels[2] });
+    assert.deepEqual({ ...context.duration(120) }, { value: '2', unit: labels[3] });
+  }
+});

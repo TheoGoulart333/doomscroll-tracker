@@ -28,7 +28,7 @@ let currentLang    = 'pt-BR';
 const COPY = {
   'pt-BR': {
     today:'Hoje', week:'Semana', settings:'Ajustes', active:'Ativo', paused:'Pausado', permissionNeeded:'Acesso pendente',
-    minutes:'minutos', hours:'horas', day:'dia', days:'dias', record:'Recorde',
+    minutes:'minutos', minuteSingular:'minuto', hours:'horas', hourSingular:'hora', durationTotal:'no total', day:'dia', days:'dias', record:'Recorde',
     todayCompare:'vs ontem', weekCompare:'vs semana passada',
     limitReached:'Limite alcançado por hoje. Se puder, faça uma pausa.',
     noSites:'Nenhum site monitorado por enquanto.',
@@ -54,7 +54,7 @@ const COPY = {
   },
   en: {
     today:'Today', week:'Week', settings:'Settings', active:'On', paused:'Paused', permissionNeeded:'Access needed',
-    minutes:'minutes', hours:'hours', day:'day', days:'days', record:'Best',
+    minutes:'minutes', minuteSingular:'minute', hours:'hours', hourSingular:'hour', durationTotal:'tracked in total', day:'day', days:'days', record:'Best',
     todayCompare:'vs yesterday', weekCompare:'vs last week',
     limitReached:'That’s your daily goal. Consider taking a break.',
     noSites:'No tracked sites yet.',
@@ -86,6 +86,7 @@ COPY.es = {
   limitReached:'Has alcanzado tu objetivo de hoy. Si puedes, descansa.', noSites:'Todavía no hay sitios seguidos.', startTitle:'Descubre adónde va tu tiempo.', startCopy:'Mira cuánto tiempo pasas en los sitios que eliges. Tus datos se quedan en este navegador. Sin juicios.', privacy:'Tus datos se quedan en este navegador. Doomscroll Tracker no envía tu historial a ningún servidor.',
   welcomeSites:'Sitios que quieres seguir', welcomeSitesHelp:'Escribe un dominio (p. ej., reddit.com) o pega una URL. Solo guardamos el dominio, sin www ni la ruta.', welcomeDomainPlaceholder:'reddit.com o https://reddit.com/…', welcomeAdd:'Añadir sitio', domainHelp:'Escribe un dominio (p. ej., reddit.com) o pega una URL. Solo guardamos el dominio, sin www ni la ruta.', domainInvalid:'No reconocemos ese sitio. Escribe un dominio como reddit.com o pega una URL válida.', domainDuplicate:'Ese sitio ya está en la lista.', siteAdded:'Se añadió {domain}.', noMonitoredSites:'No hay sitios en la lista. Añade un dominio abajo.', selectedSites:'{count} sitios seleccionados', selectedSite:'1 sitio seleccionado', noSelectedSites:'No hay sitios seleccionados. Puedes continuar sin seguimiento.',
   language:'Idioma', start:'Activar seguimiento', skip:'Continuar sin seguimiento', permissionExplainer:'Chrome pedirá acceso solo a los sitios de tu lista para reconocer cuándo los visitas.', permissionDenied:'Sin este acceso, la extensión no puede contar el tiempo. Inténtalo de nuevo o continúa sin seguimiento.', permissionMissing:'Para contar el tiempo, elige sitios y permite el acceso en Ajustes.', savePermissionDenied:'No se autorizó el acceso a los sitios; no se guardaron los cambios.', saved:'Cambios guardados.', loadError:'No se pudieron cargar tus datos', loadErrorCopy:'La extensión no respondió esta vez. Inténtalo de nuevo o vuelve a cargarla en chrome://extensions.', retry:'Intentar de nuevo', limit:'Objetivo diario', weekLabel:'Esta semana', secondsShort:'s',
+  minutes:'minutos', minuteSingular:'minuto', hours:'horas', hourSingular:'hora', durationTotal:'en total',
   streak:'días dentro de tu objetivo', streakStart:'Hoy puedes empezar de nuevo', goal:'Objetivo: {limit} min/día — quedan {left} min', left:'Quedan {left} min hoy', hit:'Objetivo alcanzado ({limit} min)', sitesToday:'Sitios de hoy', last7:'Últimos 7 días', topSites:'Sitios más visitados', sessions:'Actividad reciente', visitCount:'{count} visitas', visitCountOne:'1 visita', export:'Exportar CSV', avg:'Promedio (min)', best:'Día más bajo', worst:'Mayor uso', alert:'Avisos del objetivo', alertSub:'Avisos al llegar al 80 % y al 100 %', setLimit:'Objetivo diario', setLimitSub:'Elige una referencia diaria que te resulte útil', notifications:'Notificaciones', monitored:'Sitios seguidos', weeklyReport:'Resumen semanal', weeklyToggle:'Recordatorio semanal', weeklySub:'Recibe un breve resumen una vez por semana', livePrefix:'Hoy en', add:'Añadir sitio', save:'Guardar ajustes', more:'Más opciones', reset:'Borrar historial', emptySessions:'Todavía no hay sesiones registradas.', nothing:'Todavía no hay datos de hoy.', confirmReset:'¿Borrar todo el historial de este navegador? Esta acción no se puede deshacer.', onTrack:'Dentro de tu objetivo. Uso de hoy: {today} min.', gentle:'Te acercas a tu objetivo diario. ¿Te tomas un breve descanso?', progress:'Has alcanzado el objetivo de hoy. Un descanso puede ayudar.',
   navLabel:'Navegación de Doomscroll Tracker', pauseTitle:'Pausar o reanudar el seguimiento', domainInputPlaceholder:'reddit.com o https://reddit.com/…', removeSite:'Quitar {domain}', moodEmptyTitle:'Todavía no hay datos.', moodEmptyBody:'El tiempo empieza a contar cuando visitas un sitio de la lista.', moodCalm:'Un comienzo tranquilo.', moodSteady:'Todo va bien por ahora.', moodNear:'Te acercas a tu objetivo.', moodAlmost:'Casi has llegado a tu objetivo.', moodTracked:'{minutes} min de seguimiento hoy.', moodTrackedShort:'{minutes} min de seguimiento.', moodPause:'Un breve descanso puede ayudar.', moodRemaining:'Quedan {minutes} min, si quieres seguir contando.', moodRemainingToday:'Quedan {minutes} min hoy.', moodChangeGoal:'Puedes cambiar este objetivo cuando quieras.', streakFirst:'Primer día dentro de tu objetivo', streakWithin:'{count} días dentro de tu objetivo', streakDays:'{count} días seguidos', chartAvg:'Promedio (min)', chartBest:'Mejor día', chartWorst:'Mayor uso',
 };
@@ -96,6 +97,7 @@ COPY.fr = {
   limitReached:'Votre objectif du jour est atteint. Si possible, faites une pause.', noSites:'Aucun site suivi pour le moment.', startTitle:'Découvrez où passe votre temps.', startCopy:'Voyez le temps passé sur les sites que vous choisissez. Vos données restent dans ce navigateur. Sans jugement.', privacy:'Vos données restent dans ce navigateur. Doomscroll Tracker n’envoie pas votre historique à un serveur.',
   welcomeSites:'Sites à suivre', welcomeSitesHelp:'Saisissez un domaine (ex. reddit.com) ou collez une URL. Seul le domaine est conservé, sans www ni chemin.', welcomeDomainPlaceholder:'reddit.com ou https://reddit.com/…', welcomeAdd:'Ajouter un site', domainHelp:'Saisissez un domaine (ex. reddit.com) ou collez une URL. Seul le domaine est conservé, sans www ni chemin.', domainInvalid:'Site non reconnu. Saisissez un domaine comme reddit.com ou collez une URL valide.', domainDuplicate:'Ce site figure déjà dans la liste.', siteAdded:'{domain} a été ajouté.', noMonitoredSites:'Aucun site dans la liste. Ajoutez un domaine ci-dessous.', selectedSites:'{count} sites sélectionnés', selectedSite:'1 site sélectionné', noSelectedSites:'Aucun site sélectionné. Vous pouvez continuer sans suivi.',
   language:'Langue', start:'Activer le suivi', skip:'Continuer sans suivi', permissionExplainer:'Chrome demandera l’accès uniquement aux sites de votre liste pour reconnaître vos visites.', permissionDenied:'Sans cet accès, l’extension ne peut pas compter le temps. Réessayez ou continuez sans suivi.', permissionMissing:'Pour compter le temps, choisissez des sites et autorisez leur accès dans Réglages.', savePermissionDenied:'L’accès aux sites a été refusé ; les modifications n’ont pas été enregistrées.', saved:'Réglages enregistrés.', loadError:'Impossible de charger vos données', loadErrorCopy:'L’extension n’a pas répondu. Réessayez ou rechargez-la dans chrome://extensions.', retry:'Réessayer', limit:'Objectif quotidien', weekLabel:'Cette semaine', secondsShort:'s',
+  minutes:'minutes', minuteSingular:'minute', hours:'heures', hourSingular:'heure', durationTotal:'au total',
   streak:'jours dans votre objectif', streakStart:'Un nouveau départ aujourd’hui', goal:'Objectif : {limit} min/jour — {left} min restantes', left:'Encore {left} min aujourd’hui', hit:'Objectif atteint ({limit} min)', sitesToday:'Sites du jour', last7:'7 derniers jours', topSites:'Sites les plus visités', sessions:'Activité récente', visitCount:'{count} visites', visitCountOne:'1 visite', export:'Exporter CSV', avg:'Moyenne (min)', best:'Journée la plus basse', worst:'Usage le plus élevé', alert:'Alertes d’objectif', alertSub:'Alertes à 80 % et 100 %', setLimit:'Objectif quotidien', setLimitSub:'Choisissez un repère quotidien adapté', notifications:'Notifications', monitored:'Sites suivis', weeklyReport:'Résumé hebdomadaire', weeklyToggle:'Rappel hebdomadaire', weeklySub:'Recevez un bref résumé chaque semaine', livePrefix:'Aujourd’hui sur', add:'Ajouter un site', save:'Enregistrer les réglages', more:'Plus d’options', reset:'Effacer l’historique', emptySessions:'Aucune session enregistrée.', nothing:'Aucune donnée pour aujourd’hui.', confirmReset:'Effacer tout l’historique de ce navigateur ? Cette action est irréversible.', onTrack:'Dans votre objectif. Temps suivi aujourd’hui : {today} min.', gentle:'Vous approchez de votre objectif quotidien. Une courte pause ?', progress:'Objectif du jour atteint. Une pause peut aider.',
   navLabel:'Navigation Doomscroll Tracker', pauseTitle:'Mettre en pause ou reprendre le suivi', domainInputPlaceholder:'reddit.com ou https://reddit.com/…', removeSite:'Retirer {domain}', moodEmptyTitle:'Aucune donnée pour le moment.', moodEmptyBody:'Le suivi commence lorsque vous visitez un site de la liste.', moodCalm:'Un début tranquille.', moodSteady:'Tout va bien pour le moment.', moodNear:'Vous approchez de votre objectif.', moodAlmost:'Objectif presque atteint.', moodTracked:'{minutes} min suivies aujourd’hui.', moodTrackedShort:'{minutes} min suivies.', moodPause:'Une courte pause peut aider.', moodRemaining:'Encore {minutes} min, si vous souhaitez continuer le suivi.', moodRemainingToday:'Encore {minutes} min aujourd’hui.', moodChangeGoal:'Vous pouvez modifier cet objectif à tout moment.', streakFirst:'Premier jour dans votre objectif', streakWithin:'{count} jours dans votre objectif', streakDays:'{count} jours consécutifs', chartAvg:'Moyenne (min)', chartBest:'Meilleure journée', chartWorst:'Usage le plus élevé',
 };
@@ -167,6 +169,14 @@ function fmt(min) {
   return m === 0 ? `${h}h` : `${h}h ${m}m`;
 }
 
+function formatCardDuration(minutes) {
+  if (minutes < 60) return { value: String(minutes), unit: minutes === 1 ? tr('minuteSingular') : tr('minutes') };
+  const hours = Math.floor(minutes / 60);
+  const remainder = minutes % 60;
+  if (!remainder) return { value: String(hours), unit: hours === 1 ? tr('hourSingular') : tr('hours') };
+  return { value: `${hours}h ${remainder}m`, unit: tr('durationTotal') };
+}
+
 function fmtLive(seconds) {
   const m = Math.floor(seconds/60), s = seconds%60;
   return `${m}:${String(s).padStart(2,'0')}`;
@@ -218,10 +228,12 @@ function renderToday(s) {
   document.getElementById('h-date').textContent = new Date().toLocaleDateString(DATE_LOCALE[currentLang], {weekday:'long',day:'numeric',month:'long'});
 
   // Hero
-  document.getElementById('today-val').textContent = fmt(today);
-  document.getElementById('today-unit').textContent = today < 60 ? tr('minutes') : tr('hours');
-  document.getElementById('week-val').textContent   = fmt(week);
-  document.getElementById('week-unit').textContent  = week  < 60 ? tr('minutes') : tr('hours');
+  const todayDisplay = formatCardDuration(today);
+  const weekDisplay = formatCardDuration(week);
+  document.getElementById('today-val').textContent = todayDisplay.value;
+  document.getElementById('today-unit').textContent = todayDisplay.unit;
+  document.getElementById('week-val').textContent   = weekDisplay.value;
+  document.getElementById('week-unit').textContent  = weekDisplay.unit;
 
   // Deltas
   const deltaToday = today - yesterday;
